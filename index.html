@@ -3,48 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, My Love! 🎂❤️</title>
+    <meta name="description" content="Happy Birthday Bebee!! - I hope you liked it 😅😚">
+    <title>Happy Birthday, My Love</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- Confetti Container -->
+    <!-- Confetti Layer -->
     <div id="confetti"></div>
 
-    <!-- Opening Section -->
+    <!-- Music Control Button -->
+    <button id="musicToggle" class="music-btn">
+        <span id="musicIcon">🔇</span>
+    </button>
+
+    <!-- Background Audio -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    
+
+    <!-- Hero Section -->
     <section class="hero">
-        <h1 class="happy-birthday">Happy Birthday! 🎉</h1>
-        <h2 class="name"> TOYBMOST BEAUTIFUL GIRL OUT THEREE ❤️</h2>
-        <p class="subtext">The most special person in my world</p>
-        <button id="openBtn" class="open-btn">🎁 Click to Open Your Gift</button>
+        <div class="hero-content">
+            <h1 class="title">Happy Birthday</h1>
+            <h2 class="name">[ Her Name ]</h2>
+            <p class="subtitle">To the most wonderful person in my life</p>
+            <button id="revealBtn" class="primary-btn">
+                <span class="btn-text">Open Your Gift</span>
+                <span class="btn-icon">🎁</span>
+            </button>
+        </div>
     </section>
 
-    <!-- Hidden Section - Revealed After Click -->
-    <section id="giftSection" class="hidden">
-        <div class="heart">❤️</div>
-        
-        <h3>Dearest [SOPHIA],</h3>
-        
-        <div class="message">
-            <p>Happy Birthday to the girl who lights up my life! ✨</p>
-            <p>Words can't describe how much you mean to me. You bring so much joy, laughter, and love into every single day. I’m so incredibly lucky to call you mine.</p>
-            <p>I hope your day is as amazing, beautiful, and wonderful as you are. 🥰</p>
-            <p>Thank you for being you — kind, sweet, strong, and perfect in my eyes. I promise to make more beautiful memories together.</p>
-            <p class="love">I love you so much! 💋</p>
-            <p class="signature">— From [NICHOLAI]</p>
-        </div>
+    <!-- Main Content Section -->
+    <main id="mainContent" class="hidden">
+        <section class="message-section">
+            <div class="heart-icon">❤️</div>
+            <h3>A Special Message for You</h3>
+            <div class="message-card">
+                <p>My Dearest [ Her Name ],</p>
+                <p>On this beautiful day, I want to take a moment to celebrate you — your kindness, your grace, your smile, and the incredible person you are.</p>
+                <p>You bring warmth and happiness into every moment we share. Your presence makes my world brighter, and your love is the greatest gift I have ever known.</p>
+                <p>May this birthday bring you as much joy as you bring to me every single day. May your year be filled with love, laughter, and all the beautiful things you deserve.</p>
+                <p>Thank you for being you. Thank you for choosing me. I am so incredibly proud to be yours.</p>
+                <p class="closing">Wishing you the happiest birthday, my love.</p>
+                <p class="love-line">I love you endlessly. ❤️</p>
+                <p class="signature">— [ Your Name ]</p>
+            </div>
+        </section>
 
-        <!-- Photo Gallery -->
-        <h3 class="gallery-title">💑 Our Beautiful Memories</h3>
-        <div class="gallery">
-            <img src="photo1.jpg" alt="Us together">
-            <img src="photo2.jpg" alt="Our memory">
-            <img src="photo3.jpg" alt="My favorite photo">
-        </div>
+        <section class="gallery-section">
+            <h3>Our Beautiful Memories</h3>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="photo1.jpg" alt="Our memory"></div>
+                <div class="gallery-item"><img src="photo2.jpg" alt="Together"></div>
+                <div class="gallery-item"><img src="photo3.jpg" alt="Special moment"></div>
+                <div class="gallery-item"><img src="photo4.jpg" alt="Always us"></div>
+            </div>
+        </section>
 
-        <p class="ending">🎂 Have the happiest birthday, my love! 🎂</p>
-    </section>
+        <footer class="site-footer">
+            <p>🎂 Made with love, just for you 🎂</p>
+        </footer>
+    </main>
 
     <script src="script.js"></script>
 </body>
