@@ -1,0 +1,165 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    min-height: 100vh;
+    text-align: center;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+.hero {
+    padding: 60px 20px;
+}
+
+.happy-birthday {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(3rem, 8vw, 5rem);
+    color: #d63384;
+    margin-bottom: 10px;
+    animation: bounce 1s ease-in-out infinite alternate;
+}
+
+.name {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    color: #ad1457;
+    margin-bottom: 15px;
+}
+
+.subtext {
+    font-size: 1.2rem;
+    color: #6d4c41;
+    margin-bottom: 40px;
+}
+
+.open-btn {
+    background: linear-gradient(45deg, #e91e63, #ff5722);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    font-size: 1.3rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.open-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 35px rgba(233, 30, 99, 0.4);
+}
+
+.hidden {
+    display: none;
+}
+
+.heart {
+    font-size: 4rem;
+    margin: 20px 0;
+    animation: heartbeat 1s ease-in-out infinite alternate;
+}
+
+h3 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: #ad1457;
+    margin: 30px 0 15px;
+}
+
+.message {
+    background: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    line-height: 1.8;
+    color: #4a2c2a;
+}
+
+.message p {
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+}
+
+.love {
+    font-weight: 600;
+    color: #d63384;
+    font-size: 1.2rem;
+    margin-top: 15px;
+}
+
+.signature {
+    margin-top: 20px;
+    font-style: italic;
+}
+
+.gallery-title {
+    margin-top: 50px;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.gallery img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+}
+
+.gallery img:hover {
+    transform: scale(1.05);
+}
+
+.ending {
+    margin-top: 50px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ad1457;
+}
+
+#confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Animations */
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-12px); }
+}
+
+@keyframes heartbeat {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+@media (max-width: 600px) {
+    .gallery img {
+        width: 160px;
+        height: 160px;
+    }
+    .message {
+        padding: 20px;
+    }
+}
