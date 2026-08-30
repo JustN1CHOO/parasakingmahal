@@ -20,6 +20,7 @@
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
+      --info: #3b82f6;
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --border: rgba(99, 102, 241, 0.18);
@@ -35,15 +36,69 @@
       background: radial-gradient(1200px 500px at 50% 0%, rgba(99, 102, 241, 0.10), transparent 60%), var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 20px 16px;
     }
     .container {
       max-width: 1140px;
       margin: 0 auto;
     }
+
+    /* === NOTIFICATION BANNER === */
+    .notification-bar {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.10));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: #bfdbfe;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .notification-bar.show { display: block; }
+    .notification-bar.warning {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.06));
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fef3c7;
+    }
+    .notification-bar.success {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.06));
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #d1fae5;
+    }
+
+    /* === STATISTICS === */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-card .num {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--accent-light);
+    }
+    .stat-card .label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .stat-card.today .num { color: var(--success); }
+    .stat-card.locked .num { color: var(--warning); }
+    .stat-card.keys .num { color: var(--info); }
+
     header {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 28px;
     }
     .logo-badge {
       display: inline-flex;
@@ -57,13 +112,14 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--accent-light);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     h1 {
-      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-size: clamp(2rem, 6vw, 3.4rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
+      margin-bottom: 8px;
     }
     h1 span {
       background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
@@ -73,15 +129,15 @@
     }
     .subtitle {
       color: var(--text-secondary);
-      font-size: 15px;
+      font-size: 14px;
       max-width: 600px;
-      margin: 14px auto 0;
-      line-height: 1.7;
+      margin: 0 auto;
+      line-height: 1.6;
     }
     .status-bar {
       display: flex;
       justify-content: center;
-      margin-top: 22px;
+      margin-top: 16px;
     }
     .status-badge {
       display: inline-flex;
@@ -111,8 +167,12 @@
       animation: pulse 2s infinite;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .copy-note {
       display: inline-block;
@@ -126,20 +186,16 @@
       animation: fadeIn 0.4s ease;
       border: 1px solid rgba(52, 211, 153, 0.25);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 24px;
+      gap: 16px;
     }
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px 22px;
+      border-radius: 18px;
+      padding: 24px 16px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -151,7 +207,6 @@
       border-color: var(--accent);
       box-shadow: var(--shadow);
     }
-    .card > * { position: relative; z-index: 1; }
     .card-tier {
       font-size: 12px;
       font-weight: 600;
@@ -161,7 +216,7 @@
       margin-bottom: 8px;
     }
     .card-days {
-      font-size: 52px;
+      font-size: 48px;
       font-weight: 800;
       line-height: 1;
       letter-spacing: -0.04em;
@@ -175,24 +230,24 @@
     .card-meta {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin: 14px 0 20px;
-      font-size: 13px;
+      gap: 4px;
+      margin: 12px 0 16px;
+      font-size: 12px;
       color: var(--text-secondary);
     }
     .lock-display {
       font-size: 11px;
-      padding: 5px 10px;
+      padding: 6px 10px;
       background: rgba(245, 158, 11, 0.12);
-      border-radius: 50px;
+      border-radius: 8px;
       color: #fbbf24;
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       line-height: 1.4;
     }
     .btn-primary {
       width: 100%;
-      padding: 12px;
+      padding: 14px 12px;
       background: linear-gradient(90deg, #6366f1, #8b5cf6);
       color: #fff;
       border: none;
@@ -202,6 +257,7 @@
       cursor: pointer;
       transition: all 0.25s ease;
       letter-spacing: 0.02em;
+      min-height: 50px;
     }
     .btn-primary:disabled {
       opacity: 0.4;
@@ -209,9 +265,10 @@
       transform: none;
       filter: grayscale(30%);
     }
+    .btn-primary:active:not(:disabled) { transform: scale(0.97); }
     .key-display {
-      margin-top: 16px;
-      padding: 14px 10px;
+      margin-top: 14px;
+      padding: 12px 10px;
       background: rgba(0, 0, 0, 0.35);
       border-radius: 10px;
       font-family: 'Courier New', monospace;
@@ -222,7 +279,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
       border: 1px solid rgba(52, 211, 153, 0.15);
       cursor: pointer;
       transition: all 0.2s;
@@ -235,70 +292,71 @@
     .key-display.err { color: #f87171; border-color: rgba(239, 68, 68, 0.15); }
     .offline-card {
       grid-column: 1 / -1;
-      padding: 60px 30px;
+      padding: 40px 24px;
       text-align: center;
       background: rgba(239, 68, 68, 0.04);
       border: 1px solid rgba(239, 68, 68, 0.18);
-      border-radius: 20px;
+      border-radius: 18px;
     }
-    .offline-card h3 { color: #f87171; margin-bottom: 10px; font-size: 18px; }
+    .offline-card h3 { color: #f87171; margin-bottom: 8px; font-size: 18px; }
     .offline-card p { color: var(--text-secondary); }
     .admin-fab, .logout-btn {
       position: fixed;
-      bottom: 28px;
-      padding: 14px 20px;
+      bottom: 20px;
+      padding: 12px 16px;
       border-radius: 50px;
       font-size: 14px;
       font-weight: 600;
       border: none;
       cursor: pointer;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
       transition: all 0.25s ease;
       z-index: 50;
+      min-height: 48px;
     }
     .admin-fab {
-      right: 28px;
+      right: 16px;
       background: linear-gradient(90deg, #6366f1, #8b5cf6);
       color: #fff;
     }
-    .admin-fab:hover { transform: translateY(-2px); }
+    .admin-fab:active { transform: scale(0.96); }
     .logout-btn {
-      right: 130px;
+      right: 120px;
       background: rgba(239, 68, 68, 0.12);
       color: #f87171;
       border: 1px solid rgba(239, 68, 68, 0.25);
     }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.20); }
+    .logout-btn:active { background: rgba(239, 68, 68, 0.20); }
     .hidden { display: none !important; }
     .modal-wrap {
       position: fixed;
       inset: 0;
-      background: rgba(8, 0, 20, 0.85);
+      background: rgba(8, 0, 20, 0.90);
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
       overflow-y: auto;
       z-index: 100;
       backdrop-filter: blur(6px);
     }
     .modal {
       width: 100%;
-      max-width: 580px;
+      max-width: 560px;
       margin: 4vh auto;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     }
-    .modal h2 { font-size: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .modal h2 button { background: none; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; }
-    .field-group { margin-bottom: 16px; }
+    .modal h2 { font-size: 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .modal h2 button { background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; }
+    .field-group { margin-bottom: 14px; }
     label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
     input, textarea {
       width: 100%;
-      padding: 10px 14px;
+      padding: 10px 12px;
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -307,23 +365,23 @@
       outline: none;
     }
     input:focus, textarea:focus { border-color: var(--accent); }
-    textarea { min-height: 100px; font-family: 'Courier New', monospace; font-size: 13px; }
+    textarea { min-height: 90px; font-family: 'Courier New', monospace; font-size: 13px; }
     .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .btn-s { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-s { padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; min-height: 40px; }
     .btn-s.prim { background: var(--accent); color: #fff; }
     .btn-s.sec { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
     .toggle-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px 16px;
+      padding: 12px 14px;
       background: var(--accent-soft);
       border: 1px solid var(--border);
       border-radius: 12px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
     .toggle {
-      width: 50px;
+      width: 48px;
       height: 26px;
       background: #2e2e48;
       border-radius: 13px;
@@ -341,17 +399,31 @@
       border-radius: 50%;
       transition: transform 0.25s;
     }
-    .toggle.on::after { transform: translateX(24px); }
-    .tier-block { padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; }
+    .toggle.on::after { transform: translateX(22px); }
+    .tier-block { padding: 14px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; }
     .tier-block h4 { font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; }
     .tier-block h4 span { color: var(--success); font-size: 13px; }
     .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
     .hint.good { color: var(--success); }
     .passerr { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; }
-    .loading { text-align: center; padding: 60px; color: var(--text-secondary); grid-column: 1/-1; }
-    .credit { text-align: center; margin-top: 40px; font-size: 13px; color: var(--text-secondary); }
+    .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); grid-column: 1/-1; }
+    .credit { text-align: center; margin-top: 40px; font-size: 13px; color: var(--text-secondary); padding-bottom: 80px; }
     .credit span { color: var(--accent-light); font-weight: 600; }
     .expiry-setting { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+
+    /* === MOBILE OPTIMIZATION === */
+    @media (max-width: 640px) {
+      body { padding: 12px 10px; }
+      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat-card { padding: 12px 8px; }
+      .stat-card .num { font-size: 22px; }
+      .grid { grid-template-columns: 1fr; gap: 12px; }
+      .card { padding: 20px 14px; }
+      .admin-fab { right: 12px; bottom: 16px; padding: 12px 14px; font-size: 13px; }
+      .logout-btn { right: 100px; bottom: 16px; padding: 12px 14px; font-size: 13px; }
+      .modal { padding: 18px; margin: 2vh auto; }
+      .btn-primary { padding: 13px 10px; font-size: 15px; }
+    }
   </style>
 </head>
 <body>
@@ -371,10 +443,32 @@
   </script>
 
   <div class="container">
+
+    <!-- 🔔 NOTIFICATION BANNER -->
+    <div id="notificationBar" class="notification-bar">
+      <span id="notificationText"></span>
+    </div>
+
+    <!-- 📊 STATISTICS -->
+    <div class="stats-row">
+      <div class="stat-card today">
+        <div class="num" id="statClaimsToday">0</div>
+        <div class="label">Claimed Today</div>
+      </div>
+      <div class="stat-card locked">
+        <div class="num" id="statLocked">0</div>
+        <div class="label">Locked For You</div>
+      </div>
+      <div class="stat-card keys">
+        <div class="num" id="statKeysLeft">0</div>
+        <div class="label">Keys Available</div>
+      </div>
+    </div>
+
     <header>
       <div class="logo-badge">JOHN N1CHO — KEY DISTRIBUTION</div>
       <h1>N1<span>CHO</span>O</h1>
-      <p class="subtitle">Wait for countdown → Get key → You cannot get another until your period expires.</p>
+      <p class="subtitle" id="pageSubtitle">Wait for countdown → Get key → Locked until period expires.</p>
       <div class="status-bar">
         <span id="sysBadge" class="status-badge status-online">
           <span class="pulse-dot"></span> System Online
@@ -395,16 +489,26 @@
   <!-- ADMIN PANEL -->
   <div id="adminModal" class="modal-wrap hidden">
     <div class="modal">
-      <h2>Admin Control Panel <button onclick="closeAdmin()">✕</button></h2>
+      <h2>Admin Panel <button onclick="closeAdmin()">✕</button></h2>
 
       <div class="toggle-row">
         <div>
           <strong>System Status</strong>
-          <div class="hint">Toggle to enable/disable all key issuance</div>
+          <div class="hint">Enable / Disable key claiming</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span id="sysLabel" style="font-weight:600;color:var(--success)">ONLINE</span>
           <div id="sysToggle" class="toggle on" onclick="toggleSystem()"></div>
+        </div>
+      </div>
+
+      <!-- 🔔 NOTIFICATION EDITOR -->
+      <div class="field-group">
+        <label>🔔 Site Notification / Announcement</label>
+        <input type="text" id="notificationInput" placeholder="e.g. ⚠️ Restock at 8PM tonight">
+        <div class="btn-row">
+          <button class="btn-s prim" onclick="saveNotification()">✅ Show Banner</button>
+          <button class="btn-s sec" onclick="clearNotification()">❌ Clear Banner</button>
         </div>
       </div>
 
@@ -414,18 +518,17 @@
         <div class="btn-row">
           <button class="btn-s prim" onclick="savePass()">💾 Save Password</button>
         </div>
-        <div id="passHint" class="hint">No password set — anyone can access this panel</div>
+        <div id="passHint" class="hint">No password set — anyone can open</div>
       </div>
 
-      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
-      <h3 style="margin-bottom:12px">🔑 Manage Keys, Wait Time & Lock Period</h3>
-      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">
-        ⏱️ <strong>Wait Time</strong> = seconds before key appears<br>
-        🔒 <strong>Lock Period</strong> = how long USER is LOCKED OUT (cannot claim again)
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+      <h3 style="margin-bottom:10px">🔑 Keys, Wait Time & Lock Period</h3>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">
+        ⏱️ Wait = seconds before key appears &nbsp;|&nbsp; 🔒 Lock = how long user cannot claim again
       </div>
       <div id="tierList"></div>
 
-      <div class="btn-row" style="margin-top:12px">
+      <div class="btn-row" style="margin-top:10px">
         <button class="btn-s sec" onclick="closeAdmin()">Close Panel</button>
       </div>
     </div>
@@ -433,11 +536,11 @@
 
   <!-- PASSWORD PROMPT -->
   <div id="passModal" class="modal-wrap hidden">
-    <div class="modal" style="max-width:420px">
-      <h3 style="margin-bottom:16px">🔐 Enter Admin Password</h3>
-      <input type="password" id="passCheck" placeholder="Type password here">
-      <p id="passErr" class="passerr">❌ Incorrect password — try again</p>
-      <div class="btn-row" style="margin-top:10px">
+    <div class="modal" style="max-width:400px">
+      <h3 style="margin-bottom:14px">🔐 Enter Admin Password</h3>
+      <input type="password" id="passCheck" placeholder="Type password here...">
+      <p id="passErr" class="passerr">❌ Wrong password — try again</p>
+      <div class="btn-row" style="margin-top:8px">
         <button class="btn-s sec" onclick="closePassModal()">Cancel</button>
         <button class="btn-s prim" onclick="verifyPass()">Submit</button>
       </div>
@@ -451,10 +554,14 @@
     let lockTimers = {};
     const STORAGE_KEY = 'nichoo_admin_auth';
     const CLAIM_KEY_PREFIX = 'nichoo_claim_';
+    const STATS_KEY_CLAIMS = 'nichoo_claims_today';
+    const STATS_DATE_KEY = 'nichoo_claims_date';
+    const NOTIFICATION_KEY = 'nichoo_site_notice';
 
     const defaults = {
       systemEnabled: true,
       adminPassword: '',
+      notification: '',
       tiers: {
         '1d': {name: '1-Day Access', days: 1, waitSeconds: 15, lockHours: 24, keys: []},
         '3d': {name: '3-Day Access', days: 3, waitSeconds: 30, lockHours: 72, keys: []},
@@ -463,7 +570,7 @@
       }
     };
 
-    // Initialize database if empty
+    // Initialize database
     db.ref('/').once('value').then(snap => {
       if (!snap.exists()) db.ref('/').set(defaults);
     });
@@ -473,11 +580,81 @@
       data = snap.val();
       if (!data) return;
       adminPass = data.adminPassword || '';
+      
+      // Show notification
+      if (data.notification && data.notification.trim()) {
+        showNotificationBanner(data.notification);
+        document.getElementById('notificationInput').value = data.notification;
+      } else {
+        hideNotificationBanner();
+      }
+
       renderPublic();
+      updateStats();
       if (!document.getElementById('adminModal').classList.contains('hidden')) renderAdmin();
     });
 
-    // Copy function
+    // --- NOTIFICATION FUNCTIONS ---
+    function showNotificationBanner(text) {
+      const bar = document.getElementById('notificationBar');
+      document.getElementById('notificationText').textContent = text;
+      bar.classList.add('show');
+    }
+    function hideNotificationBanner() {
+      document.getElementById('notificationBar').classList.remove('show');
+    }
+    function saveNotification() {
+      const text = document.getElementById('notificationInput').value.trim();
+      db.ref('/notification').set(text);
+      alert('✅ Notification saved! All users see it now.');
+    }
+    function clearNotification() {
+      document.getElementById('notificationInput').value = '';
+      db.ref('/notification').set('');
+      alert('✅ Notification cleared!');
+    }
+
+    // --- STATISTICS ---
+    function getTodayKey() {
+      return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+    function incrementClaimCounter() {
+      const today = getTodayKey();
+      const savedDate = localStorage.getItem(STATS_DATE_KEY);
+      
+      // Reset if new day
+      if (savedDate !== today) {
+        localStorage.setItem(STATS_DATE_KEY, today);
+        localStorage.setItem(STATS_KEY_CLAIMS, '1');
+      } else {
+        const current = parseInt(localStorage.getItem(STATS_KEY_CLAIMS) || '0');
+        localStorage.setItem(STATS_KEY_CLAIMS, (current + 1).toString());
+      }
+    }
+    function updateStats() {
+      // Claims today
+      const today = getTodayKey();
+      const savedDate = localStorage.getItem(STATS_DATE_KEY);
+      const claimsToday = savedDate === today ? parseInt(localStorage.getItem(STATS_KEY_CLAIMS) || '0') : 0;
+      document.getElementById('statClaimsToday').textContent = claimsToday;
+
+      // Locked tiers for user
+      let lockedCount = 0;
+      Object.keys(data.tiers || {}).forEach(tierId => {
+        const lockUntil = getClaimLockTime(tierId);
+        if (Date.now() < lockUntil) lockedCount++;
+      });
+      document.getElementById('statLocked').textContent = lockedCount;
+
+      // Total keys left
+      let totalKeys = 0;
+      Object.values(data.tiers || {}).forEach(tier => {
+        totalKeys += (tier.keys || []).length;
+      });
+      document.getElementById('statKeysLeft').textContent = totalKeys;
+    }
+
+    // --- COPY FUNCTION ---
     async function copyText(text, noteId) {
       const note = document.getElementById(noteId);
       try {
@@ -495,7 +672,6 @@
       if (note) setTimeout(() => note.style.display = 'none', 3000);
     }
 
-    // Format date/time
     function formatDate(timestamp) {
       if (!timestamp) return '—';
       const d = new Date(timestamp);
@@ -503,18 +679,15 @@
         month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
       });
     }
-
     function formatTimeRemaining(ms) {
       if (ms <= 0) return 'AVAILABLE NOW';
       let s = Math.floor(ms / 1000);
       let h = Math.floor(s / 3600); s %= 3600;
       let m = Math.floor(s / 60); s %= 60;
-      if (h > 0) return `${h}h ${m}m remaining`;
-      if (m > 0) return `${m}m ${s}s remaining`;
-      return `${s}s remaining`;
+      if (h > 0) return `${h}h ${m}m left`;
+      if (m > 0) return `${m}m ${s}s left`;
+      return `${s}s left`;
     }
-
-    // Get/set claim lock
     function getClaimLockTime(tierId) {
       const stored = localStorage.getItem(CLAIM_KEY_PREFIX + tierId);
       return stored ? parseInt(stored) : 0;
@@ -538,15 +711,15 @@
       if (!data.systemEnabled) {
         grid.innerHTML = `
           <div class="offline-card">
-            <h3>🚫 Key Issuance Temporarily Disabled</h3>
-            <p>The system is currently offline. Please check back later.</p>
+            <h3>🚫 System is Offline</h3>
+            <p>Key claiming is temporarily disabled. Please check back later.</p>
           </div>`;
         return;
       }
 
       grid.innerHTML = '';
-      Object.entries(data.tiers).forEach(([id, tier]) => {
-        const remaining = tier.keys ? tier.keys.length : 0;
+      Object.entries(data.tiers || {}).forEach(([id, tier]) => {
+        const remaining = (tier.keys || []).length;
         const wait = tier.waitSeconds || 15;
         const lockHrs = tier.lockHours || 24;
         const lockUntil = getClaimLockTime(id);
@@ -556,35 +729,30 @@
         grid.innerHTML += `
           <div class="card ${isLocked ? 'locked' : ''}" id="card-${id}">
             <div class="card-tier">${tier.name}</div>
-            <div class="card-days">${tier.days}<span> Days</span></div>
+            <div class="card-days">${tier.days}<span>d</span></div>
             <div class="card-meta">
               <span>Wait: <strong id="wt-${id}">0/${wait}s</strong></span>
-              <span><strong id="rm-${id}">${remaining}</strong> Keys Left</span>
+              <span>Keys Left: <strong id="rm-${id}">${remaining}</strong></span>
               <span>Lock: <strong>${lockHrs}h</strong> after claim</span>
             </div>
             ${isLocked ? `
               <div class="lock-display" id="lock-${id}">
-                🔒 Claim again after:<br>
-                <strong>${formatDate(lockUntil)}</strong>
+                🔒 Available:<br><strong>${formatDate(lockUntil)}</strong>
               </div>
             ` : ''}
             <button id="bt-${id}" class="btn-primary" onclick="startCount('${id}')" ${isLocked ? 'disabled' : ''}>
               ${isLocked ? '🔒 LOCKED' : '🔓 Unlock Key'}
             </button>
             <div id="ky-${id}" class="key-display">—</div>
-            <div id="note-${id}" style="display:none" class="copy-note">✅ Copied!</div>
+            <div id="note-${id}" class="copy-note hidden">✅ Copied!</div>
           </div>`;
 
-        // Start lock countdown if locked
-        if (isLocked) {
-          startLockCountdown(id, lockUntil);
-        }
+        if (isLocked) startLockCountdown(id, lockUntil);
       });
     }
 
     function startLockCountdown(tierId, lockUntil) {
       if (lockTimers[tierId]) clearInterval(lockTimers[tierId]);
-      
       const lockEl = document.getElementById(`lock-${tierId}`);
       const btn = document.getElementById(`bt-${tierId}`);
       const card = document.getElementById(`card-${tierId}`);
@@ -592,20 +760,17 @@
       lockTimers[tierId] = setInterval(() => {
         const now = Date.now();
         const remaining = lockUntil - now;
-        
         if (remaining <= 0) {
           clearInterval(lockTimers[tierId]);
           delete lockTimers[tierId];
-          // UNLOCK!
           if (lockEl) lockEl.remove();
           if (btn) { btn.disabled = false; btn.textContent = '🔓 Unlock Key'; }
           if (card) card.classList.remove('locked');
+          updateStats();
           return;
         }
-        
-        // Update countdown every minute
         if (lockEl && remaining % 60000 < 1000) {
-          lockEl.innerHTML = `🔒 Claim again in:<br><strong>${formatTimeRemaining(remaining)}</strong>`;
+          lockEl.innerHTML = `🔒 <strong>${formatTimeRemaining(remaining)}</strong>`;
         }
       }, 1000);
     }
@@ -619,15 +784,12 @@
       const wait = tier.waitSeconds || 15;
       const lockHrs = tier.lockHours || 24;
 
-      // Double-check lock
-      const lockUntil = getClaimLockTime(tierId);
-      if (Date.now() < lockUntil) {
+      if (Date.now() < getClaimLockTime(tierId)) {
         alert('🔒 You are still locked out! Wait until your period expires.');
         return;
       }
-
       if (keys.length === 0) {
-        ky.textContent = '❌ No keys remaining';
+        ky.textContent = '❌ No keys left';
         ky.className = 'key-display err';
         return;
       }
@@ -646,30 +808,29 @@
           clearInterval(timers[tierId]);
           delete timers[tierId];
 
-          // Show & copy key
           const issued = keys[0];
           ky.textContent = issued;
           ky.className = 'key-display';
           ky.onclick = () => copyText(issued, `note-${tierId}`);
           copyText(issued, `note-${tierId}`);
 
-          // 🔒 LOCK THIS USER for lockHours!
+          // Lock this user
           const lockUntilTime = Date.now() + (lockHrs * 60 * 60 * 1000);
           setClaimLock(tierId, lockUntilTime);
 
-          // Remove key from database
+          // Increment counter
+          incrementClaimCounter();
+
+          // Remove from database
           db.ref(`/tiers/${tierId}/keys`).transaction(arr => {
-            if (arr && arr.length > 0) return arr.slice(1);
+            if (arr && arr.length > 0) { arr.shift(); return arr; }
             return arr;
-          }).then(() => {
-            // Re-render to show locked state
-            setTimeout(() => renderPublic(), 500);
           });
         }
       }, 1000);
     }
 
-    // === ADMIN ===
+    // --- ADMIN AUTH ---
     function openAdmin() {
       const savedSession = localStorage.getItem(STORAGE_KEY);
       if (adminPass && savedSession === btoa(adminPass)) {
@@ -704,18 +865,18 @@
     function logout() {
       localStorage.removeItem(STORAGE_KEY);
       document.getElementById('logoutBtn').classList.add('hidden');
-      alert('✅ Logged out!');
+      alert('✅ Logged out! Password will be asked next time.');
     }
     function renderAdmin() {
       if (adminPass) document.getElementById('logoutBtn').classList.remove('hidden');
       document.getElementById('sysLabel').textContent = data.systemEnabled ? 'ONLINE' : 'OFFLINE';
       document.getElementById('sysLabel').style.color = data.systemEnabled ? 'var(--success)' : 'var(--danger)';
       document.getElementById('sysToggle').className = 'toggle ' + (data.systemEnabled ? 'on' : '');
-      document.getElementById('passHint').textContent = adminPass ? '✅ Password saved — will not ask again' : '⚠️ No password set';
+      document.getElementById('passHint').textContent = adminPass ? '✅ Password saved — will not ask again' : '⚠️ No password set — set one to secure';
       document.getElementById('passHint').className = 'hint ' + (adminPass ? 'good' : '');
 
       let html = '';
-      Object.entries(data.tiers).forEach(([id, tier]) => {
+      Object.entries(data.tiers || {}).forEach(([id, tier]) => {
         const keys = tier.keys || [];
         const wait = tier.waitSeconds || 15;
         const lock = tier.lockHours || 24;
@@ -733,7 +894,7 @@
               </div>
             </div>
             <label style="margin-top:10px;display:block">Keys (one per line)</label>
-            <textarea id="txt-${id}" placeholder="Paste keys here">${keys.join('\n')}</textarea>
+            <textarea id="txt-${id}" placeholder="Paste keys here...">${keys.join('\n')}</textarea>
             <div class="btn-row">
               <button class="btn-s prim" onclick="saveTier('${id}')">💾 Save Tier</button>
             </div>
@@ -748,19 +909,15 @@
       const p = document.getElementById('passIn').value.trim();
       db.ref('/adminPassword').set(p);
       if (p) localStorage.setItem(STORAGE_KEY, btoa(p));
-      alert('✅ Password saved!');
+      alert('✅ Password saved! You will NOT be asked again on this device.');
     }
     function saveTier(id) {
       const arr = document.getElementById(`txt-${id}`).value.split('\n').map(k => k.trim()).filter(k => k);
       const wait = parseInt(document.getElementById(`wait-${id}`).value) || 15;
       const lock = parseInt(document.getElementById(`lock-${id}`).value) || 24;
       
-      db.ref(`/tiers/${id}`).update({
-        keys: arr,
-        waitSeconds: wait,
-        lockHours: lock
-      });
-      alert('✅ Saved! Wait time and lock period updated!');
+      db.ref(`/tiers/${id}`).update({ keys: arr, waitSeconds: wait, lockHours: lock });
+      alert('✅ Saved! Keys, wait time & lock period updated!');
     }
   </script>
 </body>
