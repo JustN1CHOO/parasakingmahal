@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>N1choo — Free Key System</title>
+  <title>N1choo — Key System</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,19 @@
       --text-secondary: #94a3b8;
       --border: rgba(99, 102, 241, 0.18);
       --shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+      /* Injector Theme */
+      --inj-accent: #ec4899;
+      --inj-accent-light: #f472b6;
+      --inj-soft: rgba(236, 72, 153, 0.12);
+      --inj-border: rgba(236, 72, 153, 0.25);
+    }
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: linear-gradient(145deg, #ffffff, #f1f5f9);
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border: rgba(99, 102, 241, 0.25);
     }
     * {
       margin: 0;
@@ -37,11 +50,65 @@
       color: var(--text-primary);
       min-height: 100vh;
       padding: 20px 16px;
+      transition: background 0.3s ease, color 0.3s ease;
     }
     .container {
       max-width: 1140px;
       margin: 0 auto;
     }
+
+    /* === THEME TOGGLE === */
+    .theme-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 12px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .theme-btn:hover { transform: scale(1.05); }
+
+    /* === TAB SWITCHER === */
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      border-color: var(--accent);
+      color: var(--accent-light);
+      background: var(--accent-soft);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    }
+    .tab-btn.injector.active {
+      border-color: var(--inj-accent);
+      color: var(--inj-accent-light);
+      background: var(--inj-soft);
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.15);
+    }
+    .tab-btn:hover:not(.active) {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+    .tab-content { display: none; animation: fadeIn 0.4s ease; }
+    .tab-content.active { display: block; }
 
     /* === NOTIFICATION BANNER === */
     .notification-bar {
@@ -71,22 +138,25 @@
     /* === STATISTICS === */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 28px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
     }
     .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px 10px;
+      padding: 14px 8px;
       text-align: center;
+      transition: transform 0.2s;
     }
+    .stat-card:hover { transform: translateY(-2px); }
     .stat-card .num {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--accent-light);
     }
+    .stat-card.injector .num { color: var(--inj-accent-light); }
     .stat-card .label {
       font-size: 11px;
       color: var(--text-secondary);
@@ -95,10 +165,12 @@
     .stat-card.today .num { color: var(--success); }
     .stat-card.locked .num { color: var(--warning); }
     .stat-card.keys .num { color: var(--info); }
+    .stat-card.limit .num { color: #ec4899; }
 
     header {
       text-align: center;
       margin-bottom: 28px;
+      position: relative;
     }
     .logo-badge {
       display: inline-flex;
@@ -113,6 +185,11 @@
       text-transform: uppercase;
       color: var(--accent-light);
       margin-bottom: 12px;
+    }
+    .logo-badge.injector {
+      background: var(--inj-soft);
+      border-color: var(--inj-border);
+      color: var(--inj-accent-light);
     }
     h1 {
       font-size: clamp(2rem, 6vw, 3.4rem);
@@ -201,12 +278,17 @@
       overflow: hidden;
       transition: all 0.3s ease;
     }
+    .card.injector {
+      border-color: var(--inj-border);
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.08);
+    }
     .card.locked { border-color: var(--warning); opacity: 0.85; }
     .card:hover {
       transform: translateY(-4px);
       border-color: var(--accent);
       box-shadow: var(--shadow);
     }
+    .card.injector:hover { border-color: var(--inj-accent); box-shadow: 0 10px 30px rgba(236, 72, 153, 0.15); }
     .card-tier {
       font-size: 12px;
       font-weight: 600;
@@ -215,6 +297,7 @@
       color: var(--accent-light);
       margin-bottom: 8px;
     }
+    .card.injector .card-tier { color: var(--inj-accent-light); }
     .card-days {
       font-size: 48px;
       font-weight: 800;
@@ -259,6 +342,7 @@
       letter-spacing: 0.02em;
       min-height: 50px;
     }
+    .btn-primary.injector { background: linear-gradient(90deg, #ec4899, #be185d); }
     .btn-primary:disabled {
       opacity: 0.4;
       cursor: not-allowed;
@@ -284,6 +368,8 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+    .key-display.injector { color: #f472b6; border-color: rgba(244, 114, 182, 0.25); }
+    [data-theme="light"] .key-display { background: rgba(0,0,0,0.06); }
     .key-display:hover {
       border-color: rgba(52, 211, 153, 0.4);
       background: rgba(0, 0, 0, 0.5);
@@ -331,19 +417,19 @@
     .modal-wrap {
       position: fixed;
       inset: 0;
-      background: rgba(8, 0, 20, 0.90);
+      background: rgba(8, 0, 20, 0.92);
       display: flex;
       align-items: flex-start;
       justify-content: center;
       padding: 16px;
       overflow-y: auto;
       z-index: 100;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
     }
     .modal {
       width: 100%;
-      max-width: 560px;
-      margin: 4vh auto;
+      max-width: 620px;
+      margin: 2vh auto;
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 20px;
@@ -364,12 +450,15 @@
       font-size: 14px;
       outline: none;
     }
+    [data-theme="light"] input, [data-theme="light"] textarea { background: rgba(0,0,0,0.05); }
     input:focus, textarea:focus { border-color: var(--accent); }
     textarea { min-height: 90px; font-family: 'Courier New', monospace; font-size: 13px; }
     .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
     .btn-s { padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; min-height: 40px; }
     .btn-s.prim { background: var(--accent); color: #fff; }
+    .btn-s.pink { background: var(--inj-accent); color: #fff; }
     .btn-s.sec { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-s.green { background: var(--success); color: #fff; }
     .toggle-row {
       display: flex;
       justify-content: space-between;
@@ -380,6 +469,7 @@
       border-radius: 12px;
       margin-bottom: 16px;
     }
+    .toggle-row.inj { background: var(--inj-soft); border-color: var(--inj-border); }
     .toggle {
       width: 48px;
       height: 26px;
@@ -390,6 +480,7 @@
       transition: background 0.25s;
     }
     .toggle.on { background: var(--accent); }
+    .toggle.inj.on { background: var(--inj-accent); }
     .toggle::after {
       content: '';
       position: absolute;
@@ -401,6 +492,8 @@
     }
     .toggle.on::after { transform: translateX(22px); }
     .tier-block { padding: 14px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; }
+    [data-theme="light"] .tier-block { background: rgba(0,0,0,0.04); }
+    .tier-block.inj { border-left: 3px solid var(--inj-accent); }
     .tier-block h4 { font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; }
     .tier-block h4 span { color: var(--success); font-size: 13px; }
     .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
@@ -410,19 +503,42 @@
     .credit { text-align: center; margin-top: 40px; font-size: 13px; color: var(--text-secondary); padding-bottom: 80px; }
     .credit span { color: var(--accent-light); font-weight: 600; }
     .expiry-setting { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+    .log-box {
+      max-height: 200px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.25);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .log-entry { padding: 4px 0; border-bottom: 1px solid rgba(99,102,241,0.1); }
+    .log-entry:last-child { border-bottom: none; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 30px 0 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-title span { color: var(--accent-light); }
+    .section-title.inj { border-bottom-color: var(--inj-border); }
+    .section-title.inj span { color: var(--inj-accent-light); }
 
     /* === MOBILE OPTIMIZATION === */
     @media (max-width: 640px) {
       body { padding: 12px 10px; }
-      .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat-card { padding: 12px 8px; }
-      .stat-card .num { font-size: 22px; }
+      .stat-card .num { font-size: 20px; }
       .grid { grid-template-columns: 1fr; gap: 12px; }
       .card { padding: 20px 14px; }
       .admin-fab { right: 12px; bottom: 16px; padding: 12px 14px; font-size: 13px; }
       .logout-btn { right: 100px; bottom: 16px; padding: 12px 14px; font-size: 13px; }
-      .modal { padding: 18px; margin: 2vh auto; }
+      .modal { padding: 18px; margin: 1vh auto; }
       .btn-primary { padding: 13px 10px; font-size: 15px; }
+      .theme-btn { top: 0; right: 0; }
+      .tab-btn { padding: 10px 18px; font-size: 14px; }
     }
   </style>
 </head>
@@ -443,32 +559,11 @@
   </script>
 
   <div class="container">
-
-    <!-- 🔔 NOTIFICATION BANNER -->
-    <div id="notificationBar" class="notification-bar">
-      <span id="notificationText"></span>
-    </div>
-
-    <!-- 📊 STATISTICS -->
-    <div class="stats-row">
-      <div class="stat-card today">
-        <div class="num" id="statClaimsToday">0</div>
-        <div class="label">Claimed Today</div>
-      </div>
-      <div class="stat-card locked">
-        <div class="num" id="statLocked">0</div>
-        <div class="label">Locked For You</div>
-      </div>
-      <div class="stat-card keys">
-        <div class="num" id="statKeysLeft">0</div>
-        <div class="label">Keys Available</div>
-      </div>
-    </div>
-
     <header>
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
       <div class="logo-badge">JOHN N1CHO — KEY DISTRIBUTION</div>
       <h1>N1<span>CHO</span>O</h1>
-      <p class="subtitle" id="pageSubtitle">Wait for countdown → Get key → Locked until period expires.</p>
+      <p class="subtitle">Select category below → Wait → Get Key → Auto-Locked after claim</p>
       <div class="status-bar">
         <span id="sysBadge" class="status-badge status-online">
           <span class="pulse-dot"></span> System Online
@@ -476,8 +571,65 @@
       </div>
     </header>
 
-    <div id="grid" class="grid">
-      <div class="loading">⏳ Connecting to server...</div>
+    <!-- 🔑 TAB SWITCHER -->
+    <div class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('container')">📦 Container Keys</button>
+      <button class="tab-btn injector" onclick="switchTab('injector')">💉 Injector Keys</button>
+    </div>
+
+    <!-- 🔔 NOTIFICATION BANNER -->
+    <div id="notificationBar" class="notification-bar">
+      <span id="notificationText"></span>
+    </div>
+
+    <!-- === CONTAINER KEYS SECTION === -->
+    <div id="containerTab" class="tab-content active">
+      <div class="stats-row">
+        <div class="stat-card today">
+          <div class="num" id="c-claimsToday">0</div>
+          <div class="label">Claimed Today</div>
+        </div>
+        <div class="stat-card locked">
+          <div class="num" id="c-locked">0</div>
+          <div class="label">Locked For You</div>
+        </div>
+        <div class="stat-card keys">
+          <div class="num" id="c-keysLeft">0</div>
+          <div class="label">Keys Available</div>
+        </div>
+        <div class="stat-card limit">
+          <div class="num" id="c-limit">0/0</div>
+          <div class="label">Daily Limit</div>
+        </div>
+      </div>
+      <div id="c-grid" class="grid">
+        <div class="loading">⏳ Connecting...</div>
+      </div>
+    </div>
+
+    <!-- === INJECTOR KEYS SECTION === -->
+    <div id="injectorTab" class="tab-content">
+      <div class="stats-row">
+        <div class="stat-card today injector">
+          <div class="num" id="i-claimsToday">0</div>
+          <div class="label">Claimed Today</div>
+        </div>
+        <div class="stat-card locked injector">
+          <div class="num" id="i-locked">0</div>
+          <div class="label">Locked For You</div>
+        </div>
+        <div class="stat-card keys injector">
+          <div class="num" id="i-keysLeft">0</div>
+          <div class="label">Keys Available</div>
+        </div>
+        <div class="stat-card limit injector">
+          <div class="num" id="i-limit">0/0</div>
+          <div class="label">Daily Limit</div>
+        </div>
+      </div>
+      <div id="i-grid" class="grid">
+        <div class="loading">⏳ Connecting...</div>
+      </div>
     </div>
 
     <div class="credit">Powered by <span>John N1CHO</span></div>
@@ -489,12 +641,12 @@
   <!-- ADMIN PANEL -->
   <div id="adminModal" class="modal-wrap hidden">
     <div class="modal">
-      <h2>Admin Panel <button onclick="closeAdmin()">✕</button></h2>
+      <h2>🔐 Admin Control Panel <button onclick="closeAdmin()">✕</button></h2>
 
       <div class="toggle-row">
         <div>
-          <strong>System Status</strong>
-          <div class="hint">Enable / Disable key claiming</div>
+          <strong>🌐 Global System Status</strong>
+          <div class="hint">Disable to stop ALL key claiming</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <span id="sysLabel" style="font-weight:600;color:var(--success)">ONLINE</span>
@@ -502,18 +654,17 @@
         </div>
       </div>
 
-      <!-- 🔔 NOTIFICATION EDITOR -->
       <div class="field-group">
-        <label>🔔 Site Notification / Announcement</label>
+        <label>🔔 Site Announcement / Notification</label>
         <input type="text" id="notificationInput" placeholder="e.g. ⚠️ Restock at 8PM tonight">
         <div class="btn-row">
           <button class="btn-s prim" onclick="saveNotification()">✅ Show Banner</button>
-          <button class="btn-s sec" onclick="clearNotification()">❌ Clear Banner</button>
+          <button class="btn-s sec" onclick="clearNotification()">❌ Clear</button>
         </div>
       </div>
 
       <div class="field-group">
-        <label>Admin Password</label>
+        <label>🔑 Admin Password</label>
         <input type="password" id="passIn" placeholder="Set or change password">
         <div class="btn-row">
           <button class="btn-s prim" onclick="savePass()">💾 Save Password</button>
@@ -522,11 +673,32 @@
       </div>
 
       <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
-      <h3 style="margin-bottom:10px">🔑 Keys, Wait Time & Lock Period</h3>
-      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">
-        ⏱️ Wait = seconds before key appears &nbsp;|&nbsp; 🔒 Lock = how long user cannot claim again
+
+      <!-- === CONTAINER KEYS MANAGEMENT === -->
+      <h3 class="section-title"><span>📦</span> Container Keys</h3>
+      <div class="field-group">
+        <label>Daily Limit (0 = unlimited)</label>
+        <input type="number" id="c-dailyLimit" min="0" placeholder="e.g. 50">
       </div>
-      <div id="tierList"></div>
+      <div id="c-tierList"></div>
+
+      <!-- === INJECTOR KEYS MANAGEMENT === -->
+      <h3 class="section-title inj"><span>💉</span> Injector Keys</h3>
+      <div class="field-group">
+        <label>Daily Limit (0 = unlimited)</label>
+        <input type="number" id="i-dailyLimit" min="0" placeholder="e.g. 50">
+      </div>
+      <div id="i-tierList"></div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+      <h3 style="margin-bottom:10px">📋 Claim History Log</h3>
+      <div class="log-box" id="historyLog">
+        <div class="hint">No claims recorded yet</div>
+      </div>
+      <div class="btn-row" style="margin:8px 0 16px">
+        <button class="btn-s green" onclick="exportHistory()">📤 Export Log</button>
+        <button class="btn-s sec" onclick="clearHistory()">🗑️ Clear Log</button>
+      </div>
 
       <div class="btn-row" style="margin-top:10px">
         <button class="btn-s sec" onclick="closeAdmin()">Close Panel</button>
@@ -552,21 +724,33 @@
     let adminPass = '';
     let timers = {};
     let lockTimers = {};
+    let currentTab = 'container';
     const STORAGE_KEY = 'nichoo_admin_auth';
     const CLAIM_KEY_PREFIX = 'nichoo_claim_';
-    const STATS_KEY_CLAIMS = 'nichoo_claims_today';
-    const STATS_DATE_KEY = 'nichoo_claims_date';
-    const NOTIFICATION_KEY = 'nichoo_site_notice';
+    const STATS_KEY_CLAIMS = 'nichoo_claims_';
+    const STATS_DATE_KEY = 'nichoo_claims_date_';
+    const HISTORY_KEY = 'nichoo_claim_history';
+    const THEME_KEY = 'nichoo_theme';
 
     const defaults = {
       systemEnabled: true,
       adminPassword: '',
       notification: '',
-      tiers: {
-        '1d': {name: '1-Day Access', days: 1, waitSeconds: 15, lockHours: 24, keys: []},
-        '3d': {name: '3-Day Access', days: 3, waitSeconds: 30, lockHours: 72, keys: []},
-        '7d': {name: '7-Day Access', days: 7, waitSeconds: 45, lockHours: 168, keys: []},
-        '15d': {name: '15-Day Access', days: 15, waitSeconds: 80, lockHours: 360, keys: []}
+      container: {
+        dailyLimit: 0,
+        tiers: {
+          'c-1d': {name: '1-Day Container', days: 1, waitSeconds: 15, lockHours: 24, keys: []},
+          'c-3d': {name: '3-Day Container', days: 3, waitSeconds: 25, lockHours: 72, keys: []},
+          'c-7d': {name: '7-Day Container', days: 7, waitSeconds: 40, lockHours: 168, keys: []}
+        }
+      },
+      injector: {
+        dailyLimit: 0,
+        tiers: {
+          'i-1d': {name: '1-Day Injector', days: 1, waitSeconds: 20, lockHours: 24, keys: []},
+          'i-3d': {name: '3-Day Injector', days: 3, waitSeconds: 35, lockHours: 72, keys: []},
+          'i-7d': {name: '7-Day Injector', days: 7, waitSeconds: 50, lockHours: 168, keys: []}
+        }
       }
     };
 
@@ -575,13 +759,40 @@
       if (!snap.exists()) db.ref('/').set(defaults);
     });
 
-    // Real-time sync
+    // --- TAB SWITCHING ---
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tab + 'Tab').classList.add('active');
+    }
+
+    // --- THEME ---
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute('data-theme');
+      if (current === 'light') {
+        body.removeAttribute('data-theme');
+        localStorage.setItem(THEME_KEY, 'dark');
+      } else {
+        body.setAttribute('data-theme', 'light');
+        localStorage.setItem(THEME_KEY, 'light');
+      }
+    }
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'light') document.body.setAttribute('data-theme', 'light');
+    }
+    loadTheme();
+
+    // --- REAL-TIME SYNC ---
     db.ref('/').on('value', snap => {
       data = snap.val();
       if (!data) return;
       adminPass = data.adminPassword || '';
       
-      // Show notification
+      // Notification
       if (data.notification && data.notification.trim()) {
         showNotificationBanner(data.notification);
         document.getElementById('notificationInput').value = data.notification;
@@ -589,12 +800,16 @@
         hideNotificationBanner();
       }
 
-      renderPublic();
-      updateStats();
+      renderPublic('container');
+      renderPublic('injector');
+      updateStats('container');
+      updateStats('injector');
+      renderHistory();
+      
       if (!document.getElementById('adminModal').classList.contains('hidden')) renderAdmin();
     });
 
-    // --- NOTIFICATION FUNCTIONS ---
+    // --- NOTIFICATION ---
     function showNotificationBanner(text) {
       const bar = document.getElementById('notificationBar');
       document.getElementById('notificationText').textContent = text;
@@ -606,7 +821,7 @@
     function saveNotification() {
       const text = document.getElementById('notificationInput').value.trim();
       db.ref('/notification').set(text);
-      alert('✅ Notification saved! All users see it now.');
+      alert('✅ Notification saved!');
     }
     function clearNotification() {
       document.getElementById('notificationInput').value = '';
@@ -614,47 +829,91 @@
       alert('✅ Notification cleared!');
     }
 
-    // --- STATISTICS ---
-    function getTodayKey() {
-      return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    // --- CLAIM HISTORY ---
+    function addToHistory(category, tierName) {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history.unshift({
+        time: new Date().toLocaleString(),
+        category: category.toUpperCase(),
+        tier: tierName
+      });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 200)));
+      renderHistory();
     }
-    function incrementClaimCounter() {
-      const today = getTodayKey();
-      const savedDate = localStorage.getItem(STATS_DATE_KEY);
-      
-      // Reset if new day
-      if (savedDate !== today) {
-        localStorage.setItem(STATS_DATE_KEY, today);
-        localStorage.setItem(STATS_KEY_CLAIMS, '1');
-      } else {
-        const current = parseInt(localStorage.getItem(STATS_KEY_CLAIMS) || '0');
-        localStorage.setItem(STATS_KEY_CLAIMS, (current + 1).toString());
+    function renderHistory() {
+      const log = document.getElementById('historyLog');
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      if (history.length === 0) {
+        log.innerHTML = '<div class="hint">No claims recorded yet</div>';
+        return;
+      }
+      log.innerHTML = history.map(e => `
+        <div class="log-entry">📋 ${e.time} — [${e.category}] ${e.tier}</div>
+      `).join('');
+    }
+    function exportHistory() {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      if (history.length === 0) { alert('Nothing to export!'); return; }
+      const text = history.map(e => `${e.time} | ${e.category} | ${e.tier}`).join('\n');
+      const blob = new Blob([text], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `claim-history-${new Date().toDateString().replace(/\s/g,'-')}.txt`;
+      a.click(); URL.revokeObjectURL(url);
+    }
+    function clearHistory() {
+      if (confirm('Clear all history log?')) {
+        localStorage.removeItem(HISTORY_KEY);
+        renderHistory();
+        alert('✅ History cleared!');
       }
     }
-    function updateStats() {
-      // Claims today
-      const today = getTodayKey();
-      const savedDate = localStorage.getItem(STATS_DATE_KEY);
-      const claimsToday = savedDate === today ? parseInt(localStorage.getItem(STATS_KEY_CLAIMS) || '0') : 0;
-      document.getElementById('statClaimsToday').textContent = claimsToday;
 
-      // Locked tiers for user
+    // --- STATISTICS ---
+    function getTodayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+    function incrementClaimCounter(category) {
+      const today = getTodayKey();
+      const savedDate = localStorage.getItem(STATS_DATE_KEY + category);
+      
+      if (savedDate !== today) {
+        localStorage.setItem(STATS_DATE_KEY + category, today);
+        localStorage.setItem(STATS_KEY_CLAIMS + category, '1');
+      } else {
+        const current = parseInt(localStorage.getItem(STATS_KEY_CLAIMS + category) || '0');
+        localStorage.setItem(STATS_KEY_CLAIMS + category, (current + 1).toString());
+      }
+    }
+    function getClaimsToday(category) {
+      const today = getTodayKey();
+      const savedDate = localStorage.getItem(STATS_DATE_KEY + category);
+      return savedDate === today ? parseInt(localStorage.getItem(STATS_KEY_CLAIMS + category) || '0') : 0;
+    }
+    function updateStats(category) {
+      const prefix = category === 'container' ? 'c-' : 'i-';
+      const catData = data[category] || {dailyLimit:0, tiers:{}};
+      const claimsToday = getClaimsToday(category);
+      const limit = catData.dailyLimit || 0;
+      
+      document.getElementById(prefix + 'claimsToday').textContent = claimsToday;
+      document.getElementById(prefix + 'limit').textContent = limit === 0 ? `${claimsToday}/∞` : `${claimsToday}/${limit}`;
+
       let lockedCount = 0;
-      Object.keys(data.tiers || {}).forEach(tierId => {
+      Object.keys(catData.tiers || {}).forEach(tierId => {
         const lockUntil = getClaimLockTime(tierId);
         if (Date.now() < lockUntil) lockedCount++;
       });
-      document.getElementById('statLocked').textContent = lockedCount;
+      document.getElementById(prefix + 'locked').textContent = lockedCount;
 
-      // Total keys left
       let totalKeys = 0;
-      Object.values(data.tiers || {}).forEach(tier => {
+      Object.values(catData.tiers || {}).forEach(tier => {
         totalKeys += (tier.keys || []).length;
       });
-      document.getElementById('statKeysLeft').textContent = totalKeys;
+      document.getElementById(prefix + 'keysLeft').textContent = totalKeys;
     }
 
-    // --- COPY FUNCTION ---
+    // --- COPY & TIME FUNCTIONS ---
     async function copyText(text, noteId) {
       const note = document.getElementById(noteId);
       try {
@@ -671,13 +930,10 @@
       }
       if (note) setTimeout(() => note.style.display = 'none', 3000);
     }
-
     function formatDate(timestamp) {
       if (!timestamp) return '—';
       const d = new Date(timestamp);
-      return d.toLocaleString('en-US', {
-        month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
-      });
+      return d.toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
     }
     function formatTimeRemaining(ms) {
       if (ms <= 0) return 'AVAILABLE NOW';
@@ -696,229 +952,35 @@
       localStorage.setItem(CLAIM_KEY_PREFIX + tierId, lockUntilTimestamp.toString());
     }
 
-    function renderPublic() {
-      const badge = document.getElementById('sysBadge');
-      const grid = document.getElementById('grid');
+    // --- RENDER PUBLIC VIEW ---
+    function renderPublic(category) {
+      const catData = data[category] || {dailyLimit:0, tiers:{}};
+      const grid = document.getElementById((category === 'container' ? 'c-' : 'i-') + 'grid');
+      const isInjector = category === 'injector';
+      const dailyLimit = catData.dailyLimit || 0;
+      const claimsToday = getClaimsToday(category);
+      const limitReached = dailyLimit > 0 && claimsToday >= dailyLimit;
 
-      if (data.systemEnabled) {
-        badge.className = 'status-badge status-online';
-        badge.innerHTML = '<span class="pulse-dot"></span> System Online';
-      } else {
-        badge.className = 'status-badge status-offline';
-        badge.innerHTML = '<span class="pulse-dot"></span> System Offline';
+      // Update system badge once
+      if (category === 'container') {
+        const badge = document.getElementById('sysBadge');
+        if (data.systemEnabled) {
+          badge.className = 'status-badge status-online';
+          badge.innerHTML = '<span class="pulse-dot"></span> System Online';
+        } else {
+          badge.className = 'status-badge status-offline';
+          badge.innerHTML = '<span class="pulse-dot"></span> System Offline';
+        }
       }
 
-      if (!data.systemEnabled) {
+      if (!data.systemEnabled || limitReached) {
         grid.innerHTML = `
           <div class="offline-card">
-            <h3>🚫 System is Offline</h3>
-            <p>Key claiming is temporarily disabled. Please check back later.</p>
+            <h3>${limitReached ? '⚠️ Daily Limit Reached' : '🚫 System Offline'}</h3>
+            <p>${limitReached ? `Max ${dailyLimit} keys per day. Try again tomorrow!` : 'Temporarily disabled. Check back later.'}</p>
           </div>`;
         return;
       }
 
       grid.innerHTML = '';
-      Object.entries(data.tiers || {}).forEach(([id, tier]) => {
-        const remaining = (tier.keys || []).length;
-        const wait = tier.waitSeconds || 15;
-        const lockHrs = tier.lockHours || 24;
-        const lockUntil = getClaimLockTime(id);
-        const now = Date.now();
-        const isLocked = now < lockUntil;
-
-        grid.innerHTML += `
-          <div class="card ${isLocked ? 'locked' : ''}" id="card-${id}">
-            <div class="card-tier">${tier.name}</div>
-            <div class="card-days">${tier.days}<span>d</span></div>
-            <div class="card-meta">
-              <span>Wait: <strong id="wt-${id}">0/${wait}s</strong></span>
-              <span>Keys Left: <strong id="rm-${id}">${remaining}</strong></span>
-              <span>Lock: <strong>${lockHrs}h</strong> after claim</span>
-            </div>
-            ${isLocked ? `
-              <div class="lock-display" id="lock-${id}">
-                🔒 Available:<br><strong>${formatDate(lockUntil)}</strong>
-              </div>
-            ` : ''}
-            <button id="bt-${id}" class="btn-primary" onclick="startCount('${id}')" ${isLocked ? 'disabled' : ''}>
-              ${isLocked ? '🔒 LOCKED' : '🔓 Unlock Key'}
-            </button>
-            <div id="ky-${id}" class="key-display">—</div>
-            <div id="note-${id}" class="copy-note hidden">✅ Copied!</div>
-          </div>`;
-
-        if (isLocked) startLockCountdown(id, lockUntil);
-      });
-    }
-
-    function startLockCountdown(tierId, lockUntil) {
-      if (lockTimers[tierId]) clearInterval(lockTimers[tierId]);
-      const lockEl = document.getElementById(`lock-${tierId}`);
-      const btn = document.getElementById(`bt-${tierId}`);
-      const card = document.getElementById(`card-${tierId}`);
-      
-      lockTimers[tierId] = setInterval(() => {
-        const now = Date.now();
-        const remaining = lockUntil - now;
-        if (remaining <= 0) {
-          clearInterval(lockTimers[tierId]);
-          delete lockTimers[tierId];
-          if (lockEl) lockEl.remove();
-          if (btn) { btn.disabled = false; btn.textContent = '🔓 Unlock Key'; }
-          if (card) card.classList.remove('locked');
-          updateStats();
-          return;
-        }
-        if (lockEl && remaining % 60000 < 1000) {
-          lockEl.innerHTML = `🔒 <strong>${formatTimeRemaining(remaining)}</strong>`;
-        }
-      }, 1000);
-    }
-
-    function startCount(tierId) {
-      const tier = data.tiers[tierId];
-      const btn = document.getElementById(`bt-${tierId}`);
-      const wt = document.getElementById(`wt-${tierId}`);
-      const ky = document.getElementById(`ky-${tierId}`);
-      const keys = tier.keys || [];
-      const wait = tier.waitSeconds || 15;
-      const lockHrs = tier.lockHours || 24;
-
-      if (Date.now() < getClaimLockTime(tierId)) {
-        alert('🔒 You are still locked out! Wait until your period expires.');
-        return;
-      }
-      if (keys.length === 0) {
-        ky.textContent = '❌ No keys left';
-        ky.className = 'key-display err';
-        return;
-      }
-      if (timers[tierId]) return;
-
-      btn.disabled = true;
-      ky.textContent = '⌚ Please wait...';
-      ky.className = 'key-display warn';
-      let sec = 0;
-
-      timers[tierId] = setInterval(() => {
-        sec++;
-        wt.textContent = `${sec}/${wait}s`;
-
-        if (sec >= wait) {
-          clearInterval(timers[tierId]);
-          delete timers[tierId];
-
-          const issued = keys[0];
-          ky.textContent = issued;
-          ky.className = 'key-display';
-          ky.onclick = () => copyText(issued, `note-${tierId}`);
-          copyText(issued, `note-${tierId}`);
-
-          // Lock this user
-          const lockUntilTime = Date.now() + (lockHrs * 60 * 60 * 1000);
-          setClaimLock(tierId, lockUntilTime);
-
-          // Increment counter
-          incrementClaimCounter();
-
-          // Remove from database
-          db.ref(`/tiers/${tierId}/keys`).transaction(arr => {
-            if (arr && arr.length > 0) { arr.shift(); return arr; }
-            return arr;
-          });
-        }
-      }, 1000);
-    }
-
-    // --- ADMIN AUTH ---
-    function openAdmin() {
-      const savedSession = localStorage.getItem(STORAGE_KEY);
-      if (adminPass && savedSession === btoa(adminPass)) {
-        document.getElementById('adminModal').classList.remove('hidden');
-        renderAdmin();
-      } else if (adminPass) {
-        document.getElementById('passModal').classList.remove('hidden');
-        document.getElementById('passCheck').focus();
-      } else {
-        document.getElementById('adminModal').classList.remove('hidden');
-        renderAdmin();
-      }
-    }
-    function closeAdmin() { document.getElementById('adminModal').classList.add('hidden'); }
-    function closePassModal() {
-      document.getElementById('passModal').classList.add('hidden');
-      document.getElementById('passCheck').value = '';
-      document.getElementById('passErr').style.display = 'none';
-    }
-    function verifyPass() {
-      const input = document.getElementById('passCheck').value;
-      if (input === adminPass) {
-        localStorage.setItem(STORAGE_KEY, btoa(input));
-        closePassModal();
-        document.getElementById('adminModal').classList.remove('hidden');
-        renderAdmin();
-        document.getElementById('logoutBtn').classList.remove('hidden');
-      } else {
-        document.getElementById('passErr').style.display = 'block';
-      }
-    }
-    function logout() {
-      localStorage.removeItem(STORAGE_KEY);
-      document.getElementById('logoutBtn').classList.add('hidden');
-      alert('✅ Logged out! Password will be asked next time.');
-    }
-    function renderAdmin() {
-      if (adminPass) document.getElementById('logoutBtn').classList.remove('hidden');
-      document.getElementById('sysLabel').textContent = data.systemEnabled ? 'ONLINE' : 'OFFLINE';
-      document.getElementById('sysLabel').style.color = data.systemEnabled ? 'var(--success)' : 'var(--danger)';
-      document.getElementById('sysToggle').className = 'toggle ' + (data.systemEnabled ? 'on' : '');
-      document.getElementById('passHint').textContent = adminPass ? '✅ Password saved — will not ask again' : '⚠️ No password set — set one to secure';
-      document.getElementById('passHint').className = 'hint ' + (adminPass ? 'good' : '');
-
-      let html = '';
-      Object.entries(data.tiers || {}).forEach(([id, tier]) => {
-        const keys = tier.keys || [];
-        const wait = tier.waitSeconds || 15;
-        const lock = tier.lockHours || 24;
-        html += `
-          <div class="tier-block">
-            <h4>${tier.name} <span>${keys.length} keys available</span></h4>
-            <div class="expiry-setting">
-              <div>
-                <label>Wait Seconds</label>
-                <input type="number" id="wait-${id}" value="${wait}" min="1" max="999">
-              </div>
-              <div>
-                <label>Lock Period (Hours)</label>
-                <input type="number" id="lock-${id}" value="${lock}" min="1" max="8760">
-              </div>
-            </div>
-            <label style="margin-top:10px;display:block">Keys (one per line)</label>
-            <textarea id="txt-${id}" placeholder="Paste keys here...">${keys.join('\n')}</textarea>
-            <div class="btn-row">
-              <button class="btn-s prim" onclick="saveTier('${id}')">💾 Save Tier</button>
-            </div>
-          </div>`;
-      });
-      document.getElementById('tierList').innerHTML = html;
-    }
-    function toggleSystem() {
-      db.ref('/systemEnabled').set(!data.systemEnabled);
-    }
-    function savePass() {
-      const p = document.getElementById('passIn').value.trim();
-      db.ref('/adminPassword').set(p);
-      if (p) localStorage.setItem(STORAGE_KEY, btoa(p));
-      alert('✅ Password saved! You will NOT be asked again on this device.');
-    }
-    function saveTier(id) {
-      const arr = document.getElementById(`txt-${id}`).value.split('\n').map(k => k.trim()).filter(k => k);
-      const wait = parseInt(document.getElementById(`wait-${id}`).value) || 15;
-      const lock = parseInt(document.getElementById(`lock-${id}`).value) || 24;
-      
-      db.ref(`/tiers/${id}`).update({ keys: arr, waitSeconds: wait, lockHours: lock });
-      alert('✅ Saved! Keys, wait time & lock period updated!');
-    }
-  </script>
-</body>
-</html>
+      Object.entries(catData.tiers || {}).forEach((
