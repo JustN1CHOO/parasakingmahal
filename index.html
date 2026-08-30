@@ -1,75 +1,767 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Happy Birthday Bebee!! - I hope you liked it 😅😚">
-    <title>Happy Birthday, My Love</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N1choo — Free Key System</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #050508;
+      --bg-secondary: #0f1018;
+      --bg-card: linear-gradient(145deg, #141522, #1a1b2e);
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-soft: rgba(99, 102, 241, 0.12);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border: rgba(99, 102, 241, 0.18);
+      --shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: radial-gradient(1200px 500px at 50% 0%, rgba(99, 102, 241, 0.10), transparent 60%), var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    h1 span {
+      background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 15px;
+      max-width: 600px;
+      margin: 14px auto 0;
+      line-height: 1.7;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      margin-top: 22px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .status-online {
+      background: rgba(16, 185, 129, 0.10);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .status-offline {
+      background: rgba(239, 68, 68, 0.08);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.20);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .copy-note {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 14px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 600;
+      animation: fadeIn 0.4s ease;
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 22px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .card.locked { border-color: var(--warning); opacity: 0.85; }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+    .card > * { position: relative; z-index: 1; }
+    .card-tier {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 8px;
+    }
+    .card-days {
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+    .card-days span {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 14px 0 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .lock-display {
+      font-size: 11px;
+      padding: 5px 10px;
+      background: rgba(245, 158, 11, 0.12);
+      border-radius: 50px;
+      color: #fbbf24;
+      display: inline-block;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 0.02em;
+    }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      filter: grayscale(30%);
+    }
+    .key-display {
+      margin-top: 16px;
+      padding: 14px 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #34d399;
+      word-break: break-all;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .key-display:hover {
+      border-color: rgba(52, 211, 153, 0.4);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .key-display.warn { color: #fbbf24; border-color: rgba(251, 191, 36, 0.15); }
+    .key-display.err { color: #f87171; border-color: rgba(239, 68, 68, 0.15); }
+    .offline-card {
+      grid-column: 1 / -1;
+      padding: 60px 30px;
+      text-align: center;
+      background: rgba(239, 68, 68, 0.04);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      border-radius: 20px;
+    }
+    .offline-card h3 { color: #f87171; margin-bottom: 10px; font-size: 18px; }
+    .offline-card p { color: var(--text-secondary); }
+    .admin-fab, .logout-btn {
+      position: fixed;
+      bottom: 28px;
+      padding: 14px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      transition: all 0.25s ease;
+      z-index: 50;
+    }
+    .admin-fab {
+      right: 28px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      color: #fff;
+    }
+    .admin-fab:hover { transform: translateY(-2px); }
+    .logout-btn {
+      right: 130px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .logout-btn:hover { background: rgba(239, 68, 68, 0.20); }
+    .hidden { display: none !important; }
+    .modal-wrap {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 0, 20, 0.85);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 100;
+      backdrop-filter: blur(6px);
+    }
+    .modal {
+      width: 100%;
+      max-width: 580px;
+      margin: 4vh auto;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    }
+    .modal h2 { font-size: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .modal h2 button { background: none; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; }
+    .field-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+    input, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { min-height: 100px; font-family: 'Courier New', monospace; font-size: 13px; }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .btn-s { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .btn-s.prim { background: var(--accent); color: #fff; }
+    .btn-s.sec { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+    .toggle {
+      width: 50px;
+      height: 26px;
+      background: #2e2e48;
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 20px; height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+    .toggle.on::after { transform: translateX(24px); }
+    .tier-block { padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 12px; }
+    .tier-block h4 { font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+    .tier-block h4 span { color: var(--success); font-size: 13px; }
+    .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .hint.good { color: var(--success); }
+    .passerr { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; }
+    .loading { text-align: center; padding: 60px; color: var(--text-secondary); grid-column: 1/-1; }
+    .credit { text-align: center; margin-top: 40px; font-size: 13px; color: var(--text-secondary); }
+    .credit span { color: var(--accent-light); font-weight: 600; }
+    .expiry-setting { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  </style>
 </head>
 <body>
 
-    <!-- Confetti Layer -->
-    <div id="confetti"></div>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC39FXzIevjKBQ0izhzt-LwKZ3BTi4Rxxk",
+      authDomain: "nichookeys.firebaseapp.com",
+      databaseURL: "https://nichookeys-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "nichookeys",
+      storageBucket: "nichookeys.firebasestorage.app",
+      messagingSenderId: "928130308681",
+      appId: "1:928130308681:web:bb87c613577f8803b53d98"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
 
-    <!-- Music Control Button -->
-    <button id="musicToggle" class="music-btn">
-        <span id="musicIcon">🔇</span>
-    </button>
+  <div class="container">
+    <header>
+      <div class="logo-badge">JOHN N1CHO — KEY DISTRIBUTION</div>
+      <h1>N1<span>CHO</span>O</h1>
+      <p class="subtitle">Wait for countdown → Get key → You cannot get another until your period expires.</p>
+      <div class="status-bar">
+        <span id="sysBadge" class="status-badge status-online">
+          <span class="pulse-dot"></span> System Online
+        </span>
+      </div>
+    </header>
 
-    <!-- Background Audio -->
-    <audio id="bgMusic" loop preload="auto">
-        <source src="music.mp3" type="audio/mpeg">
-    
+    <div id="grid" class="grid">
+      <div class="loading">⏳ Connecting to server...</div>
+    </div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="title">Happy Birthday</h1>
-            <h2 class="name">[ Her Name ]</h2>
-            <p class="subtitle">To the most wonderful person in my life</p>
-            <button id="revealBtn" class="primary-btn">
-                <span class="btn-text">Open Your Gift</span>
-                <span class="btn-icon">🎁</span>
-            </button>
+    <div class="credit">Powered by <span>John N1CHO</span></div>
+  </div>
+
+  <button class="admin-fab" onclick="openAdmin()">⚙️ Admin</button>
+  <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">🚪 Logout</button>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminModal" class="modal-wrap hidden">
+    <div class="modal">
+      <h2>Admin Control Panel <button onclick="closeAdmin()">✕</button></h2>
+
+      <div class="toggle-row">
+        <div>
+          <strong>System Status</strong>
+          <div class="hint">Toggle to enable/disable all key issuance</div>
         </div>
-    </section>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span id="sysLabel" style="font-weight:600;color:var(--success)">ONLINE</span>
+          <div id="sysToggle" class="toggle on" onclick="toggleSystem()"></div>
+        </div>
+      </div>
 
-    <!-- Main Content Section -->
-    <main id="mainContent" class="hidden">
-        <section class="message-section">
-            <div class="heart-icon">❤️</div>
-            <h3>A Special Message for You</h3>
-            <div class="message-card">
-                <p>My Dearest [ Her Name ],</p>
-                <p>On this beautiful day, I want to take a moment to celebrate you — your kindness, your grace, your smile, and the incredible person you are.</p>
-                <p>You bring warmth and happiness into every moment we share. Your presence makes my world brighter, and your love is the greatest gift I have ever known.</p>
-                <p>May this birthday bring you as much joy as you bring to me every single day. May your year be filled with love, laughter, and all the beautiful things you deserve.</p>
-                <p>Thank you for being you. Thank you for choosing me. I am so incredibly proud to be yours.</p>
-                <p class="closing">Wishing you the happiest birthday, my love.</p>
-                <p class="love-line">I love you endlessly. ❤️</p>
-                <p class="signature">— [ Your Name ]</p>
+      <div class="field-group">
+        <label>Admin Password</label>
+        <input type="password" id="passIn" placeholder="Set or change password">
+        <div class="btn-row">
+          <button class="btn-s prim" onclick="savePass()">💾 Save Password</button>
+        </div>
+        <div id="passHint" class="hint">No password set — anyone can access this panel</div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
+      <h3 style="margin-bottom:12px">🔑 Manage Keys, Wait Time & Lock Period</h3>
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">
+        ⏱️ <strong>Wait Time</strong> = seconds before key appears<br>
+        🔒 <strong>Lock Period</strong> = how long USER is LOCKED OUT (cannot claim again)
+      </div>
+      <div id="tierList"></div>
+
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn-s sec" onclick="closeAdmin()">Close Panel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD PROMPT -->
+  <div id="passModal" class="modal-wrap hidden">
+    <div class="modal" style="max-width:420px">
+      <h3 style="margin-bottom:16px">🔐 Enter Admin Password</h3>
+      <input type="password" id="passCheck" placeholder="Type password here">
+      <p id="passErr" class="passerr">❌ Incorrect password — try again</p>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn-s sec" onclick="closePassModal()">Cancel</button>
+        <button class="btn-s prim" onclick="verifyPass()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let data = null;
+    let adminPass = '';
+    let timers = {};
+    let lockTimers = {};
+    const STORAGE_KEY = 'nichoo_admin_auth';
+    const CLAIM_KEY_PREFIX = 'nichoo_claim_';
+
+    const defaults = {
+      systemEnabled: true,
+      adminPassword: '',
+      tiers: {
+        '1d': {name: '1-Day Access', days: 1, waitSeconds: 15, lockHours: 24, keys: []},
+        '3d': {name: '3-Day Access', days: 3, waitSeconds: 30, lockHours: 72, keys: []},
+        '7d': {name: '7-Day Access', days: 7, waitSeconds: 45, lockHours: 168, keys: []},
+        '15d': {name: '15-Day Access', days: 15, waitSeconds: 80, lockHours: 360, keys: []}
+      }
+    };
+
+    // Initialize database if empty
+    db.ref('/').once('value').then(snap => {
+      if (!snap.exists()) db.ref('/').set(defaults);
+    });
+
+    // Real-time sync
+    db.ref('/').on('value', snap => {
+      data = snap.val();
+      if (!data) return;
+      adminPass = data.adminPassword || '';
+      renderPublic();
+      if (!document.getElementById('adminModal').classList.contains('hidden')) renderAdmin();
+    });
+
+    // Copy function
+    async function copyText(text, noteId) {
+      const note = document.getElementById(noteId);
+      try {
+        await navigator.clipboard.writeText(text);
+        if (note) { note.textContent = '✅ Copied!'; note.style.display = 'inline-block'; }
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (note) { note.textContent = '✅ Copied!'; note.style.display = 'inline-block'; }
+      }
+      if (note) setTimeout(() => note.style.display = 'none', 3000);
+    }
+
+    // Format date/time
+    function formatDate(timestamp) {
+      if (!timestamp) return '—';
+      const d = new Date(timestamp);
+      return d.toLocaleString('en-US', {
+        month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'
+      });
+    }
+
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return 'AVAILABLE NOW';
+      let s = Math.floor(ms / 1000);
+      let h = Math.floor(s / 3600); s %= 3600;
+      let m = Math.floor(s / 60); s %= 60;
+      if (h > 0) return `${h}h ${m}m remaining`;
+      if (m > 0) return `${m}m ${s}s remaining`;
+      return `${s}s remaining`;
+    }
+
+    // Get/set claim lock
+    function getClaimLockTime(tierId) {
+      const stored = localStorage.getItem(CLAIM_KEY_PREFIX + tierId);
+      return stored ? parseInt(stored) : 0;
+    }
+    function setClaimLock(tierId, lockUntilTimestamp) {
+      localStorage.setItem(CLAIM_KEY_PREFIX + tierId, lockUntilTimestamp.toString());
+    }
+
+    function renderPublic() {
+      const badge = document.getElementById('sysBadge');
+      const grid = document.getElementById('grid');
+
+      if (data.systemEnabled) {
+        badge.className = 'status-badge status-online';
+        badge.innerHTML = '<span class="pulse-dot"></span> System Online';
+      } else {
+        badge.className = 'status-badge status-offline';
+        badge.innerHTML = '<span class="pulse-dot"></span> System Offline';
+      }
+
+      if (!data.systemEnabled) {
+        grid.innerHTML = `
+          <div class="offline-card">
+            <h3>🚫 Key Issuance Temporarily Disabled</h3>
+            <p>The system is currently offline. Please check back later.</p>
+          </div>`;
+        return;
+      }
+
+      grid.innerHTML = '';
+      Object.entries(data.tiers).forEach(([id, tier]) => {
+        const remaining = tier.keys ? tier.keys.length : 0;
+        const wait = tier.waitSeconds || 15;
+        const lockHrs = tier.lockHours || 24;
+        const lockUntil = getClaimLockTime(id);
+        const now = Date.now();
+        const isLocked = now < lockUntil;
+
+        grid.innerHTML += `
+          <div class="card ${isLocked ? 'locked' : ''}" id="card-${id}">
+            <div class="card-tier">${tier.name}</div>
+            <div class="card-days">${tier.days}<span> Days</span></div>
+            <div class="card-meta">
+              <span>Wait: <strong id="wt-${id}">0/${wait}s</strong></span>
+              <span><strong id="rm-${id}">${remaining}</strong> Keys Left</span>
+              <span>Lock: <strong>${lockHrs}h</strong> after claim</span>
             </div>
-        </section>
+            ${isLocked ? `
+              <div class="lock-display" id="lock-${id}">
+                🔒 Claim again after:<br>
+                <strong>${formatDate(lockUntil)}</strong>
+              </div>
+            ` : ''}
+            <button id="bt-${id}" class="btn-primary" onclick="startCount('${id}')" ${isLocked ? 'disabled' : ''}>
+              ${isLocked ? '🔒 LOCKED' : '🔓 Unlock Key'}
+            </button>
+            <div id="ky-${id}" class="key-display">—</div>
+            <div id="note-${id}" style="display:none" class="copy-note">✅ Copied!</div>
+          </div>`;
 
-        <section class="gallery-section">
-            <h3>Our Beautiful Memories</h3>
-            <div class="gallery-grid">
-                <div class="gallery-item"><img src="photo1.jpg" alt="Our memory"></div>
-                <div class="gallery-item"><img src="photo2.jpg" alt="Together"></div>
-                <div class="gallery-item"><img src="photo3.jpg" alt="Special moment"></div>
-                <div class="gallery-item"><img src="photo4.jpg" alt="Always us"></div>
+        // Start lock countdown if locked
+        if (isLocked) {
+          startLockCountdown(id, lockUntil);
+        }
+      });
+    }
+
+    function startLockCountdown(tierId, lockUntil) {
+      if (lockTimers[tierId]) clearInterval(lockTimers[tierId]);
+      
+      const lockEl = document.getElementById(`lock-${tierId}`);
+      const btn = document.getElementById(`bt-${tierId}`);
+      const card = document.getElementById(`card-${tierId}`);
+      
+      lockTimers[tierId] = setInterval(() => {
+        const now = Date.now();
+        const remaining = lockUntil - now;
+        
+        if (remaining <= 0) {
+          clearInterval(lockTimers[tierId]);
+          delete lockTimers[tierId];
+          // UNLOCK!
+          if (lockEl) lockEl.remove();
+          if (btn) { btn.disabled = false; btn.textContent = '🔓 Unlock Key'; }
+          if (card) card.classList.remove('locked');
+          return;
+        }
+        
+        // Update countdown every minute
+        if (lockEl && remaining % 60000 < 1000) {
+          lockEl.innerHTML = `🔒 Claim again in:<br><strong>${formatTimeRemaining(remaining)}</strong>`;
+        }
+      }, 1000);
+    }
+
+    function startCount(tierId) {
+      const tier = data.tiers[tierId];
+      const btn = document.getElementById(`bt-${tierId}`);
+      const wt = document.getElementById(`wt-${tierId}`);
+      const ky = document.getElementById(`ky-${tierId}`);
+      const keys = tier.keys || [];
+      const wait = tier.waitSeconds || 15;
+      const lockHrs = tier.lockHours || 24;
+
+      // Double-check lock
+      const lockUntil = getClaimLockTime(tierId);
+      if (Date.now() < lockUntil) {
+        alert('🔒 You are still locked out! Wait until your period expires.');
+        return;
+      }
+
+      if (keys.length === 0) {
+        ky.textContent = '❌ No keys remaining';
+        ky.className = 'key-display err';
+        return;
+      }
+      if (timers[tierId]) return;
+
+      btn.disabled = true;
+      ky.textContent = '⌚ Please wait...';
+      ky.className = 'key-display warn';
+      let sec = 0;
+
+      timers[tierId] = setInterval(() => {
+        sec++;
+        wt.textContent = `${sec}/${wait}s`;
+
+        if (sec >= wait) {
+          clearInterval(timers[tierId]);
+          delete timers[tierId];
+
+          // Show & copy key
+          const issued = keys[0];
+          ky.textContent = issued;
+          ky.className = 'key-display';
+          ky.onclick = () => copyText(issued, `note-${tierId}`);
+          copyText(issued, `note-${tierId}`);
+
+          // 🔒 LOCK THIS USER for lockHours!
+          const lockUntilTime = Date.now() + (lockHrs * 60 * 60 * 1000);
+          setClaimLock(tierId, lockUntilTime);
+
+          // Remove key from database
+          db.ref(`/tiers/${tierId}/keys`).transaction(arr => {
+            if (arr && arr.length > 0) return arr.slice(1);
+            return arr;
+          }).then(() => {
+            // Re-render to show locked state
+            setTimeout(() => renderPublic(), 500);
+          });
+        }
+      }, 1000);
+    }
+
+    // === ADMIN ===
+    function openAdmin() {
+      const savedSession = localStorage.getItem(STORAGE_KEY);
+      if (adminPass && savedSession === btoa(adminPass)) {
+        document.getElementById('adminModal').classList.remove('hidden');
+        renderAdmin();
+      } else if (adminPass) {
+        document.getElementById('passModal').classList.remove('hidden');
+        document.getElementById('passCheck').focus();
+      } else {
+        document.getElementById('adminModal').classList.remove('hidden');
+        renderAdmin();
+      }
+    }
+    function closeAdmin() { document.getElementById('adminModal').classList.add('hidden'); }
+    function closePassModal() {
+      document.getElementById('passModal').classList.add('hidden');
+      document.getElementById('passCheck').value = '';
+      document.getElementById('passErr').style.display = 'none';
+    }
+    function verifyPass() {
+      const input = document.getElementById('passCheck').value;
+      if (input === adminPass) {
+        localStorage.setItem(STORAGE_KEY, btoa(input));
+        closePassModal();
+        document.getElementById('adminModal').classList.remove('hidden');
+        renderAdmin();
+        document.getElementById('logoutBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('passErr').style.display = 'block';
+      }
+    }
+    function logout() {
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById('logoutBtn').classList.add('hidden');
+      alert('✅ Logged out!');
+    }
+    function renderAdmin() {
+      if (adminPass) document.getElementById('logoutBtn').classList.remove('hidden');
+      document.getElementById('sysLabel').textContent = data.systemEnabled ? 'ONLINE' : 'OFFLINE';
+      document.getElementById('sysLabel').style.color = data.systemEnabled ? 'var(--success)' : 'var(--danger)';
+      document.getElementById('sysToggle').className = 'toggle ' + (data.systemEnabled ? 'on' : '');
+      document.getElementById('passHint').textContent = adminPass ? '✅ Password saved — will not ask again' : '⚠️ No password set';
+      document.getElementById('passHint').className = 'hint ' + (adminPass ? 'good' : '');
+
+      let html = '';
+      Object.entries(data.tiers).forEach(([id, tier]) => {
+        const keys = tier.keys || [];
+        const wait = tier.waitSeconds || 15;
+        const lock = tier.lockHours || 24;
+        html += `
+          <div class="tier-block">
+            <h4>${tier.name} <span>${keys.length} keys available</span></h4>
+            <div class="expiry-setting">
+              <div>
+                <label>Wait Seconds</label>
+                <input type="number" id="wait-${id}" value="${wait}" min="1" max="999">
+              </div>
+              <div>
+                <label>Lock Period (Hours)</label>
+                <input type="number" id="lock-${id}" value="${lock}" min="1" max="8760">
+              </div>
             </div>
-        </section>
-
-        <footer class="site-footer">
-            <p>🎂 Made with love, just for you 🎂</p>
-        </footer>
-    </main>
-
-    <script src="script.js"></script>
+            <label style="margin-top:10px;display:block">Keys (one per line)</label>
+            <textarea id="txt-${id}" placeholder="Paste keys here">${keys.join('\n')}</textarea>
+            <div class="btn-row">
+              <button class="btn-s prim" onclick="saveTier('${id}')">💾 Save Tier</button>
+            </div>
+          </div>`;
+      });
+      document.getElementById('tierList').innerHTML = html;
+    }
+    function toggleSystem() {
+      db.ref('/systemEnabled').set(!data.systemEnabled);
+    }
+    function savePass() {
+      const p = document.getElementById('passIn').value.trim();
+      db.ref('/adminPassword').set(p);
+      if (p) localStorage.setItem(STORAGE_KEY, btoa(p));
+      alert('✅ Password saved!');
+    }
+    function saveTier(id) {
+      const arr = document.getElementById(`txt-${id}`).value.split('\n').map(k => k.trim()).filter(k => k);
+      const wait = parseInt(document.getElementById(`wait-${id}`).value) || 15;
+      const lock = parseInt(document.getElementById(`lock-${id}`).value) || 24;
+      
+      db.ref(`/tiers/${id}`).update({
+        keys: arr,
+        waitSeconds: wait,
+        lockHours: lock
+      });
+      alert('✅ Saved! Wait time and lock period updated!');
+    }
+  </script>
 </body>
 </html>
