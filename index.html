@@ -1,3914 +1,4545 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#050508">
-<title>N1choo — Key System</title>
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width,initial-scale=1.0">  
+<meta name="theme-color" content="#050508">  
+<title>N1choo — Key System</title>  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>  <link rel="preconnect" href="https://fonts.googleapis.com">  
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">  <style>  
+:root{  
+  --bg-primary:#050508;  
+  --bg-secondary:#0f1018;  
+  --bg-card:linear-gradient(145deg,#141522,#1a1b2e);  
+  --accent:#6366f1;  
+  --accent-light:#818cf8;  
+  --accent-soft:rgba(99,102,241,.12);  
+  --success:#10b981;  
+  --danger:#ef4444;  
+  --warning:#f59e0b;  
+  --info:#3b82f6;  
+  --text-primary:#f8fafc;  
+  --text-secondary:#94a3b8;  
+  --border:rgba(99,102,241,.18);  
+  --shadow:0 20px 60px rgba(99,102,241,.15);  
+  
+  --inj-accent:#ec4899;  
+  --inj-accent-light:#f472b6;  
+  --inj-soft:rgba(236,72,153,.12);  
+  --inj-border:rgba(236,72,153,.25);  
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --bg-primary:#050508;
-  --bg-secondary:#0f1018;
-  --bg-card:linear-gradient(145deg,#141522,#1a1b2e);
-  --accent:#6366f1;
-  --accent-light:#818cf8;
-  --accent-soft:rgba(99,102,241,.12);
-  --success:#10b981;
-  --danger:#ef4444;
-  --warning:#f59e0b;
-  --info:#3b82f6;
-  --text-primary:#f8fafc;
-  --text-secondary:#94a3b8;
-  --border:rgba(99,102,241,.18);
-  --shadow:0 20px 60px rgba(99,102,241,.15);
-
-  --inj-accent:#ec4899;
-  --inj-accent-light:#f472b6;
-  --inj-soft:rgba(236,72,153,.12);
-  --inj-border:rgba(236,72,153,.25);
-}
-
-[data-theme="light"]{
-  --bg-primary:#f8fafc;
-  --bg-secondary:#fff;
-  --bg-card:linear-gradient(145deg,#fff,#f1f5f9);
-  --text-primary:#1e293b;
-  --text-secondary:#64748b;
-  --border:rgba(99,102,241,.25);
-  --shadow:0 20px 60px rgba(15,23,42,.10);
-}
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Inter,sans-serif;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  min-height:100vh;
-  padding:20px 16px 30px;
-  color:var(--text-primary);
-  background:
-    radial-gradient(
-      1200px 500px at 50% 0%,
-      rgba(99,102,241,.10),
-      transparent 60%
-    ),
-    var(--bg-primary);
-  transition:.3s ease;
-}
-
-button,
-input,
-textarea{
-  font:inherit;
-}
-
-button{
-  -webkit-tap-highlight-color:transparent;
-}
-
-.container{
-  width:100%;
-  max-width:1140px;
-  margin:auto;
-}
-
-/* HEADER */
-
-header{
-  position:relative;
-  text-align:center;
-  margin-bottom:28px;
-}
-
-.theme-btn{
-  position:absolute;
-  top:0;
-  right:0;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:1px solid var(--border);
-  background:var(--bg-card);
-  color:var(--text-primary);
-  font-size:18px;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.theme-btn:hover{
-  transform:scale(1.06);
-}
-
-.logo-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 16px;
-  margin-bottom:12px;
-  border:1px solid var(--border);
-  border-radius:50px;
-  background:var(--accent-soft);
-  color:var(--accent-light);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-}
-
-h1{
-  margin-bottom:8px;
-  font-size:clamp(2rem,6vw,3.4rem);
-  line-height:1.1;
-  font-weight:800;
-  letter-spacing:-.04em;
-}
-
-h1 span{
-  background:linear-gradient(
-    90deg,
-    #6366f1,
-    #a855f7,
-    #ec4899
-  );
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
-
-.subtitle{
-  max-width:600px;
-  margin:auto;
-  color:var(--text-secondary);
-  font-size:14px;
-  line-height:1.6;
-}
-
-.status-bar{
-  display:flex;
-  justify-content:center;
-  margin-top:16px;
-}
-
-.status-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 18px;
-  border-radius:50px;
-  font-size:13px;
-  font-weight:600;
-}
-
-.status-online{
-  color:#34d399;
-  background:rgba(16,185,129,.10);
-  border:1px solid rgba(16,185,129,.25);
-}
-
-.status-offline{
-  color:#f87171;
-  background:rgba(239,68,68,.08);
-  border:1px solid rgba(239,68,68,.20);
-}
-
-.pulse-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:currentColor;
-  animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.3}
-}
-
-@keyframes fadeIn{
-  from{
-    opacity:0;
-    transform:translateY(6px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-/* TABS */
-
-.tabs-container{
-  display:flex;
-  justify-content:center;
+  --game-accent:#fbbf24;
+  --game-accent-light:#fcd34d;
+  --game-soft:rgba(251,191,36,.12);
+  --game-border:rgba(251,191,36,.28);
+}  
+  
+[data-theme="light"]{  
+  --bg-primary:#f8fafc;  
+  --bg-secondary:#fff;  
+  --bg-card:linear-gradient(145deg,#fff,#f1f5f9);  
+  --text-primary:#1e293b;  
+  --text-secondary:#64748b;  
+  --border:rgba(99,102,241,.25);  
+  --shadow:0 20px 60px rgba(15,23,42,.10);  
+}  
+  
+*{  
+  margin:0;  
+  padding:0;  
+  box-sizing:border-box;  
+  font-family:Inter,sans-serif;  
+}  
+  
+html{  
+  scroll-behavior:smooth;  
+}  
+  
+body{  
+  min-height:100vh;  
+  padding:20px 16px 30px;  
+  color:var(--text-primary);  
+  background:  
+    radial-gradient(  
+      1200px 500px at 50% 0%,  
+      rgba(99,102,241,.10),  
+      transparent 60%  
+    ),  
+    var(--bg-primary);  
+  transition:.3s ease;  
+}  
+  
+button,  
+input,  
+textarea{  
+  font:inherit;  
+}  
+  
+button{  
+  -webkit-tap-highlight-color:transparent;  
+}  
+  
+.container{  
+  width:100%;  
+  max-width:1140px;  
+  margin:auto;  
+}  
+  
+/* HEADER */  
+  
+header{  
+  position:relative;  
+  text-align:center;  
+  margin-bottom:28px;  
+}  
+  
+.theme-btn{  
+  position:absolute;  
+  top:0;  
+  right:0;  
+  width:44px;  
+  height:44px;  
+  border-radius:50%;  
+  border:1px solid var(--border);  
+  background:var(--bg-card);  
+  color:var(--text-primary);  
+  font-size:18px;  
+  cursor:pointer;  
+  transition:.25s;  
+}  
+  
+.theme-btn:hover{  
+  transform:scale(1.06);  
+}  
+  
+.logo-badge{  
+  display:inline-flex;  
+  align-items:center;  
+  gap:8px;  
+  padding:7px 16px;  
+  margin-bottom:12px;  
+  border:1px solid var(--border);  
+  border-radius:50px;  
+  background:var(--accent-soft);  
+  color:var(--accent-light);  
+  font-size:11px;  
+  font-weight:600;  
+  letter-spacing:.16em;  
+  text-transform:uppercase;  
+}  
+  
+h1{  
+  margin-bottom:8px;  
+  font-size:clamp(2rem,6vw,3.4rem);  
+  line-height:1.1;  
+  font-weight:800;  
+  letter-spacing:-.04em;  
+}  
+  
+h1 span{  
+  background:linear-gradient(  
+    90deg,  
+    #6366f1,  
+    #a855f7,  
+    #ec4899  
+  );  
+  -webkit-background-clip:text;  
+  background-clip:text;  
+  color:transparent;  
+}  
+  
+.subtitle{  
+  max-width:600px;  
+  margin:auto;  
+  color:var(--text-secondary);  
+  font-size:14px;  
+  line-height:1.6;  
+}  
+  
+.status-bar{  
+  display:flex;  
+  justify-content:center;  
   flex-wrap:wrap;
   gap:10px;
-  margin-bottom:24px;
+  margin-top:16px;  
+}  
+  
+.status-badge{  
+  display:inline-flex;  
+  align-items:center;  
+  gap:8px;  
+  padding:8px 18px;  
+  border-radius:50px;  
+  font-size:13px;  
+  font-weight:600;  
+}  
+  
+.status-online{  
+  color:#34d399;  
+  background:rgba(16,185,129,.10);  
+  border:1px solid rgba(16,185,129,.25);  
+}  
+  
+.status-offline{  
+  color:#f87171;  
+  background:rgba(239,68,68,.08);  
+  border:1px solid rgba(239,68,68,.20);  
+}  
+
+.points-badge{
+  color:var(--game-accent-light);
+  background:var(--game-soft);
+  border:1px solid var(--game-border);
 }
+  
+.pulse-dot{  
+  width:8px;  
+  height:8px;  
+  border-radius:50%;  
+  background:currentColor;  
+  animation:pulse 2s infinite;  
+}  
+  
+@keyframes pulse{  
+  0%,100%{opacity:1}  
+  50%{opacity:.3}  
+}  
+  
+@keyframes fadeIn{  
+  from{  
+    opacity:0;  
+    transform:translateY(6px);  
+  }  
+  to{  
+    opacity:1;  
+    transform:translateY(0);  
+  }  
+}  
+  
+/* TABS */  
+  
+.tabs-container{  
+  display:flex;  
+  justify-content:center;  
+  flex-wrap:wrap;  
+  gap:10px;  
+  margin-bottom:24px;  
+}  
+  
+.tab-btn{  
+  padding:12px 24px;  
+  border:2px solid var(--border);  
+  border-radius:50px;  
+  background:var(--bg-card);  
+  color:var(--text-secondary);  
+  font-size:15px;  
+  font-weight:600;  
+  cursor:pointer;  
+  transition:.3s;  
+}  
+  
+.tab-btn:hover{  
+  color:var(--text-primary);  
+}  
+  
+.tab-btn.active{  
+  color:var(--accent-light);  
+  border-color:var(--accent);  
+  background:var(--accent-soft);  
+  box-shadow:0 0 20px rgba(99,102,241,.15);  
+}  
+  
+.tab-btn.injector.active{  
+  color:var(--inj-accent-light);  
+  border-color:var(--inj-accent);  
+  background:var(--inj-soft);  
+  box-shadow:0 0 20px rgba(236,72,153,.15);  
+}  
 
-.tab-btn{
-  padding:12px 24px;
-  border:2px solid var(--border);
-  border-radius:50px;
-  background:var(--bg-card);
-  color:var(--text-secondary);
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.3s;
+.tab-btn.game.active{
+  color:var(--game-accent-light);
+  border-color:var(--game-accent);
+  background:var(--game-soft);
+  box-shadow:0 0 20px rgba(251,191,36,.20);
 }
+  
+.tab-content{  
+  display:none;  
+  animation:fadeIn .4s ease;  
+}  
+  
+.tab-content.active{  
+  display:block;  
+}  
+  
+/* NOTIFICATION */  
+  
+.notification-bar{  
+  display:none;  
+  margin-bottom:24px;  
+  padding:12px 16px;  
+  border:1px solid rgba(59,130,246,.3);  
+  border-radius:12px;  
+  background:linear-gradient(  
+    90deg,  
+    rgba(59,130,246,.15),  
+    rgba(99,102,241,.10)  
+  );  
+  color:#bfdbfe;  
+  text-align:center;  
+  font-size:14px;  
+  animation:fadeIn .4s ease;  
+}  
+  
+.notification-bar.show{  
+  display:block;  
+}  
+  
+/* STATS */  
+  
+.stats-row{  
+  display:grid;  
+  grid-template-columns:repeat(4,1fr);  
+  gap:10px;  
+  margin-bottom:24px;  
+}  
+  
+.stat-card{  
+  padding:14px 8px;  
+  border:1px solid var(--border);  
+  border-radius:14px;  
+  background:var(--bg-card);  
+  text-align:center;  
+  transition:.2s;  
+}  
+  
+.stat-card:hover{  
+  transform:translateY(-2px);  
+}  
+  
+.stat-card .num{  
+  font-size:24px;  
+  font-weight:800;  
+  color:var(--accent-light);  
+}  
+  
+.stat-card .label{  
+  margin-top:4px;  
+  color:var(--text-secondary);  
+  font-size:11px;  
+}  
+  
+.stat-card.today .num{  
+  color:var(--success);  
+}  
+  
+.stat-card.locked .num{  
+  color:var(--warning);  
+}  
+  
+.stat-card.keys .num{  
+  color:var(--info);  
+}  
+  
+.stat-card.limit .num{  
+  color:#ec4899;  
+}  
+  
+.stat-card.injector .num{  
+  color:var(--inj-accent-light);  
+}  
 
-.tab-btn:hover{
-  color:var(--text-primary);
+.stat-card.game .num{
+  color:var(--game-accent-light);
 }
+  
+/* GRID */  
+  
+.grid{  
+  display:grid;  
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));  
+  gap:16px;  
+}  
+  
+.card{  
+  position:relative;  
+  overflow:hidden;  
+  padding:24px 16px;  
+  border:1px solid var(--border);  
+  border-radius:18px;  
+  background:var(--bg-card);  
+  text-align:center;  
+  transition:.3s ease;  
+}  
+  
+.card:hover{  
+  transform:translateY(-4px);  
+  border-color:var(--accent);  
+  box-shadow:var(--shadow);  
+}  
+  
+.card.injector:hover{  
+  border-color:var(--inj-accent);  
+  box-shadow:0 10px 30px rgba(236,72,153,.15);  
+}  
+  
+.card.locked{  
+  border-color:var(--warning);  
+  opacity:.86;  
+}  
+  
+.card-tier{  
+  margin-bottom:8px;  
+  color:var(--accent-light);  
+  font-size:12px;  
+  font-weight:600;  
+  letter-spacing:.14em;  
+  text-transform:uppercase;  
+}  
+  
+.card.injector .card-tier{  
+  color:var(--inj-accent-light);  
+}  
+  
+.card-days{  
+  margin-bottom:4px;  
+  font-size:48px;  
+  font-weight:800;  
+  line-height:1;  
+  letter-spacing:-.04em;  
+}  
+  
+.card-days span{  
+  color:var(--text-secondary);  
+  font-size:14px;  
+  font-weight:500;  
+}  
+  
+.card-meta{  
+  display:flex;  
+  flex-direction:column;  
+  gap:4px;  
+  margin:12px 0 16px;  
+  color:var(--text-secondary);  
+  font-size:12px;  
+}  
+  
+.lock-display{  
+  display:inline-block;  
+  margin-bottom:12px;  
+  padding:6px 10px;  
+  border-radius:8px;  
+  background:rgba(245,158,11,.12);  
+  color:#fbbf24;  
+  font-size:11px;  
+  line-height:1.4;  
+}  
+  
+.btn-primary{  
+  width:100%;  
+  min-height:50px;  
+  padding:14px 12px;  
+  border:0;  
+  border-radius:12px;  
+  background:linear-gradient(90deg,#6366f1,#8b5cf6);  
+  color:#fff;  
+  font-size:15px;  
+  font-weight:600;  
+  letter-spacing:.02em;  
+  cursor:pointer;  
+  transition:.25s;  
+}  
+  
+.btn-primary.injector{  
+  background:linear-gradient(90deg,#ec4899,#be185d);  
+}  
 
-.tab-btn.active{
-  color:var(--accent-light);
-  border-color:var(--accent);
-  background:var(--accent-soft);
-  box-shadow:0 0 20px rgba(99,102,241,.15);
+.btn-primary.game{
+  background:linear-gradient(90deg,#f59e0b,#d97706);
 }
+  
+.btn-primary:disabled{  
+  opacity:.4;  
+  cursor:not-allowed;  
+  transform:none;  
+}  
+  
+.btn-primary:active:not(:disabled){  
+  transform:scale(.97);  
+}  
+  
+.key-display{  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  min-height:50px;  
+  margin-top:14px;  
+  padding:12px 10px;  
+  border:1px solid rgba(52,211,153,.15);  
+  border-radius:10px;  
+  background:rgba(0,0,0,.35);  
+  color:#34d399;  
+  font-family:"Courier New",monospace;  
+  font-size:13px;  
+  letter-spacing:.04em;  
+  word-break:break-all;  
+  cursor:default;  
+  transition:.2s;  
+}  
+  
+.key-display.ready{  
+  cursor:pointer;  
+}  
+  
+.key-display.ready:hover{  
+  border-color:rgba(52,211,153,.4);  
+  background:rgba(0,0,0,.5);  
+}  
+  
+.key-display.injector{  
+  color:#f472b6;  
+  border-color:rgba(244,114,182,.25);  
+}  
+  
+.key-display.warn{  
+  color:#fbbf24;  
+  border-color:rgba(251,191,36,.15);  
+}  
+  
+.key-display.err{  
+  color:#f87171;  
+  border-color:rgba(239,68,68,.15);  
+}  
 
-.tab-btn.injector.active{
-  color:var(--inj-accent-light);
-  border-color:var(--inj-accent);
-  background:var(--inj-soft);
-  box-shadow:0 0 20px rgba(236,72,153,.15);
+.key-display.game{
+  color:var(--game-accent-light);
+  border-color:var(--game-border);
 }
+  
+.copy-note{  
+  margin-top:7px;  
+  color:#34d399;  
+  font-size:11px;  
+}  
+  
+.offline-card{  
+  grid-column:1/-1;  
+  padding:40px 24px;  
+  border:1px solid rgba(239,68,68,.18);  
+  border-radius:18px;  
+  background:rgba(239,68,68,.04);  
+  text-align:center;  
+}  
+  
+.offline-card h3{  
+  margin-bottom:8px;  
+  color:#f87171;  
+  font-size:18px;  
+}  
+  
+.offline-card p{  
+  color:var(--text-secondary);  
+}  
+  
+/* ============================================
+   PLAY TO EARN — GAME TAB
+   ============================================ */
 
-.tab-content{
-  display:none;
-  animation:fadeIn .4s ease;
-}
-
-.tab-content.active{
-  display:block;
-}
-
-/* NOTIFICATION */
-
-.notification-bar{
-  display:none;
-  margin-bottom:24px;
-  padding:12px 16px;
-  border:1px solid rgba(59,130,246,.3);
-  border-radius:12px;
-  background:linear-gradient(
-    90deg,
-    rgba(59,130,246,.15),
-    rgba(99,102,241,.10)
-  );
-  color:#bfdbfe;
-  text-align:center;
-  font-size:14px;
-  animation:fadeIn .4s ease;
-}
-
-.notification-bar.show{
-  display:block;
-}
-
-/* STATS */
-
-.stats-row{
+.game-stats-row{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:10px;
-  margin-bottom:24px;
+  margin-bottom:20px;
 }
 
-.stat-card{
-  padding:14px 8px;
-  border:1px solid var(--border);
+.game-wrap{
+  max-width:720px;
+  margin:0 auto;
+}
+
+.game-hud{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
+  padding:10px 16px;
+  border:1px solid var(--game-border);
+  border-radius:12px;
+  background:var(--game-soft);
+  font-size:13px;
+  font-weight:600;
+}
+
+.game-hud .hud-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--text-primary);
+}
+
+.game-hud .hud-val{
+  color:var(--game-accent-light);
+  font-weight:800;
+}
+
+.game-area{
+  position:relative;
+  width:100%;
+  height:380px;
+  border:2px solid var(--game-border);
+  border-radius:16px;
+  background:
+    radial-gradient(600px 200px at 50% 0%, rgba(251,191,36,.08), transparent 70%),
+    linear-gradient(180deg, #0a0a14, #12121f);
+  overflow:hidden;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.game-area.shake{
+  animation:gameShake .3s ease;
+}
+
+@keyframes gameShake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
+.falling-item{
+  position:absolute;
+  top:-50px;
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  border-radius:12px;
+  will-change:transform;
+  transition:none;
+  z-index:5;
+}
+
+.falling-item.key-item{
+  background:linear-gradient(135deg, rgba(251,191,36,.25), rgba(245,158,11,.15));
+  border:1px solid rgba(251,191,36,.5);
+  box-shadow:0 0 14px rgba(251,191,36,.35);
+  text-shadow:0 0 8px rgba(251,191,36,.6);
+}
+
+.falling-item.bomb-item{
+  background:linear-gradient(135deg, rgba(239,68,68,.25), rgba(185,28,28,.15));
+  border:1px solid rgba(239,68,68,.5);
+  box-shadow:0 0 14px rgba(239,68,68,.35);
+}
+
+.floating-score{
+  position:absolute;
+  font-weight:800;
+  font-size:16px;
+  pointer-events:none;
+  z-index:10;
+  animation:floatUp .8s ease-out forwards;
+}
+
+@keyframes floatUp{
+  0%{opacity:1; transform:translateY(0) scale(1)}
+  100%{opacity:0; transform:translateY(-50px) scale(1.4)}
+}
+
+.game-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  background:rgba(5,5,12,.85);
+  backdrop-filter:blur(6px);
+  z-index:20;
+  text-align:center;
+  padding:20px;
+}
+
+.game-overlay h3{
+  font-size:26px;
+  font-weight:800;
+  color:var(--game-accent-light);
+}
+
+.game-overlay p{
+  color:var(--text-secondary);
+  font-size:14px;
+  max-width:380px;
+  line-height:1.6;
+}
+
+.game-overlay .big-points{
+  font-size:40px;
+  font-weight:800;
+  color:var(--game-accent-light);
+  text-shadow:0 0 20px rgba(251,191,36,.4);
+}
+
+.game-btn{
+  padding:14px 36px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(90deg,#f59e0b,#d97706);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.game-btn:active{ transform:scale(.96); }
+.game-btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+.redeem-section{
+  margin-top:28px;
+}
+
+.redeem-section h3{
+  margin-bottom:14px;
+  padding-bottom:8px;
+  border-bottom:2px solid var(--game-border);
+  font-size:18px;
+  font-weight:700;
+  color:var(--game-accent-light);
+}
+
+.redeem-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+}
+
+.redeem-card{
+  padding:18px 14px;
+  border:1px solid var(--game-border);
   border-radius:14px;
   background:var(--bg-card);
   text-align:center;
-  transition:.2s;
-}
-
-.stat-card:hover{
-  transform:translateY(-2px);
-}
-
-.stat-card .num{
-  font-size:24px;
-  font-weight:800;
-  color:var(--accent-light);
-}
-
-.stat-card .label{
-  margin-top:4px;
-  color:var(--text-secondary);
-  font-size:11px;
-}
-
-.stat-card.today .num{
-  color:var(--success);
-}
-
-.stat-card.locked .num{
-  color:var(--warning);
-}
-
-.stat-card.keys .num{
-  color:var(--info);
-}
-
-.stat-card.limit .num{
-  color:#ec4899;
-}
-
-.stat-card.injector .num{
-  color:var(--inj-accent-light);
-}
-
-/* GRID */
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:16px;
-}
-
-.card{
-  position:relative;
-  overflow:hidden;
-  padding:24px 16px;
-  border:1px solid var(--border);
-  border-radius:18px;
-  background:var(--bg-card);
-  text-align:center;
-  transition:.3s ease;
-}
-
-.card:hover{
-  transform:translateY(-4px);
-  border-color:var(--accent);
-  box-shadow:var(--shadow);
-}
-
-.card.injector:hover{
-  border-color:var(--inj-accent);
-  box-shadow:0 10px 30px rgba(236,72,153,.15);
-}
-
-.card.locked{
-  border-color:var(--warning);
-  opacity:.86;
-}
-
-.card-tier{
-  margin-bottom:8px;
-  color:var(--accent-light);
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-}
-
-.card.injector .card-tier{
-  color:var(--inj-accent-light);
-}
-
-.card-days{
-  margin-bottom:4px;
-  font-size:48px;
-  font-weight:800;
-  line-height:1;
-  letter-spacing:-.04em;
-}
-
-.card-days span{
-  color:var(--text-secondary);
-  font-size:14px;
-  font-weight:500;
-}
-
-.card-meta{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  margin:12px 0 16px;
-  color:var(--text-secondary);
-  font-size:12px;
-}
-
-.lock-display{
-  display:inline-block;
-  margin-bottom:12px;
-  padding:6px 10px;
-  border-radius:8px;
-  background:rgba(245,158,11,.12);
-  color:#fbbf24;
-  font-size:11px;
-  line-height:1.4;
-}
-
-.btn-primary{
-  width:100%;
-  min-height:50px;
-  padding:14px 12px;
-  border:0;
-  border-radius:12px;
-  background:linear-gradient(90deg,#6366f1,#8b5cf6);
-  color:#fff;
-  font-size:15px;
-  font-weight:600;
-  letter-spacing:.02em;
-  cursor:pointer;
   transition:.25s;
 }
 
-.btn-primary.injector{
-  background:linear-gradient(90deg,#ec4899,#be185d);
+.redeem-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(251,191,36,.12);
 }
 
-.btn-primary:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-  transform:none;
-}
-
-.btn-primary:active:not(:disabled){
-  transform:scale(.97);
-}
-
-.key-display{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:50px;
-  margin-top:14px;
-  padding:12px 10px;
-  border:1px solid rgba(52,211,153,.15);
-  border-radius:10px;
-  background:rgba(0,0,0,.35);
-  color:#34d399;
-  font-family:"Courier New",monospace;
-  font-size:13px;
-  letter-spacing:.04em;
-  word-break:break-all;
-  cursor:default;
-  transition:.2s;
-}
-
-.key-display.ready{
-  cursor:pointer;
-}
-
-.key-display.ready:hover{
-  border-color:rgba(52,211,153,.4);
-  background:rgba(0,0,0,.5);
-}
-
-.key-display.injector{
-  color:#f472b6;
-  border-color:rgba(244,114,182,.25);
-}
-
-.key-display.warn{
-  color:#fbbf24;
-  border-color:rgba(251,191,36,.15);
-}
-
-.key-display.err{
-  color:#f87171;
-  border-color:rgba(239,68,68,.15);
-}
-
-.copy-note{
-  margin-top:7px;
-  color:#34d399;
-  font-size:11px;
-}
-
-.offline-card{
-  grid-column:1/-1;
-  padding:40px 24px;
-  border:1px solid rgba(239,68,68,.18);
-  border-radius:18px;
-  background:rgba(239,68,68,.04);
-  text-align:center;
-}
-
-.offline-card h3{
-  margin-bottom:8px;
-  color:#f87171;
-  font-size:18px;
-}
-
-.offline-card p{
-  color:var(--text-secondary);
-}
-
-/* FLOATING BUTTONS */
-
-.admin-fab,
-.logout-btn{
-  position:fixed;
-  bottom:20px;
-  z-index:50;
-  min-height:48px;
-  padding:12px 16px;
-  border-radius:50px;
-  font-size:14px;
-  font-weight:600;
-  cursor:pointer;
-  box-shadow:0 6px 24px rgba(0,0,0,.35);
-  transition:.25s;
-}
-
-.admin-fab{
-  right:16px;
-  border:0;
-  background:linear-gradient(90deg,#6366f1,#8b5cf6);
-  color:#fff;
-}
-
-.logout-btn{
-  right:120px;
-  border:1px solid rgba(239,68,68,.25);
-  background:rgba(239,68,68,.12);
-  color:#f87171;
-}
-
-.hidden{
-  display:none!important;
-}
-
-/* MODALS */
-
-.modal-wrap{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  padding:16px;
-  overflow-y:auto;
-  background:rgba(8,0,20,.92);
-  backdrop-filter:blur(8px);
-}
-
-.modal{
-  width:100%;
-  max-width:620px;
-  margin:2vh auto;
-  padding:24px;
-  border:1px solid var(--border);
-  border-radius:20px;
-  background:var(--bg-secondary);
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-}
-
-.modal h2{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:16px;
-  font-size:18px;
-}
-
-.modal h2 button{
-  border:0;
-  background:none;
-  color:var(--text-secondary);
-  font-size:20px;
-  cursor:pointer;
-}
-
-.field-group{
-  margin-bottom:14px;
-}
-
-label{
-  display:block;
-  margin-bottom:6px;
-  color:var(--text-secondary);
-  font-size:13px;
-  font-weight:500;
-}
-
-input,
-textarea{
-  width:100%;
-  padding:10px 12px;
-  outline:none;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:rgba(0,0,0,.3);
-  color:var(--text-primary);
-  font-size:14px;
-}
-
-input:focus,
-textarea:focus{
-  border-color:var(--accent);
-}
-
-textarea{
-  min-height:100px;
-  resize:vertical;
-  font-family:"Courier New",monospace;
-  font-size:13px;
-}
-
-.btn-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:6px;
-}
-
-.btn-s{
-  min-height:40px;
-  padding:9px 14px;
-  border:0;
-  border-radius:8px;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.btn-s.prim{
-  background:var(--accent);
-  color:#fff;
-}
-
-.btn-s.pink{
-  background:var(--inj-accent);
-  color:#fff;
-}
-
-.btn-s.sec{
-  border:1px solid var(--border);
-  background:transparent;
-  color:var(--text-primary);
-}
-
-.btn-s.green{
-  background:var(--success);
-  color:#fff;
-}
-
-.toggle-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:16px;
-  padding:12px 14px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:var(--accent-soft);
-}
-
-.toggle-row.inj{
-  border-color:var(--inj-border);
-  background:var(--inj-soft);
-}
-
-.toggle{
-  position:relative;
-  width:48px;
-  height:26px;
-  border-radius:13px;
-  background:#2e2e48;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.toggle.on{
-  background:var(--accent);
-}
-
-.toggle.inj.on{
-  background:var(--inj-accent);
-}
-
-.toggle::after{
-  content:"";
-  position:absolute;
-  top:3px;
-  left:3px;
-  width:20px;
-  height:20px;
-  border-radius:50%;
-  background:#fff;
-  transition:.25s;
-}
-
-.toggle.on::after{
-  transform:translateX(22px);
-}
-
-.tier-block{
-  margin-bottom:12px;
-  padding:14px;
-  border-radius:12px;
-  background:rgba(0,0,0,.2);
-}
-
-.tier-block.inj{
-  border-left:3px solid var(--inj-accent);
-}
-
-.tier-block h4{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-  font-size:14px;
-}
-
-.tier-block h4 span{
-  color:var(--success);
-  font-size:13px;
-}
-
-.expiry-setting{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:6px;
-}
-
-.hint{
-  margin-top:4px;
-  color:var(--text-secondary);
+.redeem-card .r-tier{
   font-size:12px;
-}
-
-.hint.good{
-  color:var(--success);
-}
-
-.passerr{
-  display:none;
-  margin-top:6px;
-  color:var(--danger);
-  font-size:13px;
-}
-
-.log-box{
-  max-height:200px;
-  overflow-y:auto;
-  margin-top:8px;
-  padding:10px;
-  border-radius:10px;
-  background:rgba(0,0,0,.25);
-  font-size:12px;
-}
-
-.log-entry{
-  padding:5px 0;
-  border-bottom:1px solid rgba(99,102,241,.1);
-}
-
-.log-entry:last-child{
-  border-bottom:0;
-}
-
-.section-title{
-  margin:30px 0 15px;
-  padding-bottom:8px;
-  border-bottom:2px solid var(--border);
-  font-size:18px;
   font-weight:700;
-}
-
-.section-title span{
-  color:var(--accent-light);
-}
-
-.section-title.inj{
-  border-bottom-color:var(--inj-border);
-}
-
-.section-title.inj span{
-  color:var(--inj-accent-light);
-}
-
-.loading{
-  grid-column:1/-1;
-  padding:60px 20px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
   color:var(--text-secondary);
-  text-align:center;
+  margin-bottom:6px;
 }
 
-.credit{
-  margin-top:40px;
-  padding-bottom:80px;
+.redeem-card .r-days{
+  font-size:32px;
+  font-weight:800;
+  color:var(--text-primary);
+  line-height:1;
+  margin-bottom:4px;
+}
+
+.redeem-card .r-days span{ font-size:14px; color:var(--text-secondary); font-weight:500; }
+
+.redeem-card .r-cost{
+  margin:10px 0 12px;
+  color:var(--game-accent-light);
+  font-weight:700;
+  font-size:14px;
+}
+
+.redeem-card .r-keys-left{
+  font-size:11px;
   color:var(--text-secondary);
-  text-align:center;
-  font-size:13px;
+  margin-bottom:10px;
 }
 
-.credit span{
-  color:var(--accent-light);
-  font-weight:600;
+.redeem-key-display{
+  margin-top:12px;
+  padding:10px 8px;
+  border:1px solid var(--game-border);
+  border-radius:8px;
+  background:rgba(0,0,0,.4);
+  color:var(--game-accent-light);
+  font-family:"Courier New",monospace;
+  font-size:12px;
+  word-break:break-all;
+  cursor:pointer;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* MOBILE */
+/* FLOATING BUTTONS */  
+  
+.admin-fab,  
+.logout-btn{  
+  position:fixed;  
+  bottom:20px;  
+  z-index:50;  
+  min-height:48px;  
+  padding:12px 16px;  
+  border-radius:50px;  
+  font-size:14px;  
+  font-weight:600;  
+  cursor:pointer;  
+  box-shadow:0 6px 24px rgba(0,0,0,.35);  
+  transition:.25s;  
+}  
+  
+.admin-fab{  
+  right:16px;  
+  border:0;  
+  background:linear-gradient(90deg,#6366f1,#8b5cf6);  
+  color:#fff;  
+}  
+  
+.logout-btn{  
+  right:120px;  
+  border:1px solid rgba(239,68,68,.25);  
+  background:rgba(239,68,68,.12);  
+  color:#f87171;  
+}  
+  
+.hidden{  
+  display:none!important;  
+}  
+  
+/* MODALS */  
+  
+.modal-wrap{  
+  position:fixed;  
+  inset:0;  
+  z-index:100;  
+  display:flex;  
+  align-items:flex-start;  
+  justify-content:center;  
+  padding:16px;  
+  overflow-y:auto;  
+  background:rgba(8,0,20,.92);  
+  backdrop-filter:blur(8px);  
+}  
+  
+.modal{  
+  width:100%;  
+  max-width:620px;  
+  margin:2vh auto;  
+  padding:24px;  
+  border:1px solid var(--border);  
+  border-radius:20px;  
+  background:var(--bg-secondary);  
+  box-shadow:0 20px 60px rgba(0,0,0,.5);  
+}  
+  
+.modal h2{  
+  display:flex;  
+  align-items:center;  
+  justify-content:space-between;  
+  margin-bottom:16px;  
+  font-size:18px;  
+}  
+  
+.modal h2 button{  
+  border:0;  
+  background:none;  
+  color:var(--text-secondary);  
+  font-size:20px;  
+  cursor:pointer;  
+}  
+  
+.field-group{  
+  margin-bottom:14px;  
+}  
+  
+label{  
+  display:block;  
+  margin-bottom:6px;  
+  color:var(--text-secondary);  
+  font-size:13px;  
+  font-weight:500;  
+}  
+  
+input,  
+textarea{  
+  width:100%;  
+  padding:10px 12px;  
+  outline:none;  
+  border:1px solid var(--border);  
+  border-radius:10px;  
+  background:rgba(0,0,0,.3);  
+  color:var(--text-primary);  
+  font-size:14px;  
+}  
+  
+input:focus,  
+textarea:focus{  
+  border-color:var(--accent);  
+}  
+  
+textarea{  
+  min-height:100px;  
+  resize:vertical;  
+  font-family:"Courier New",monospace;  
+  font-size:13px;  
+}  
+  
+.btn-row{  
+  display:flex;  
+  flex-wrap:wrap;  
+  gap:8px;  
+  margin-top:6px;  
+}  
+  
+.btn-s{  
+  min-height:40px;  
+  padding:9px 14px;  
+  border:0;  
+  border-radius:8px;  
+  font-size:13px;  
+  font-weight:600;  
+  cursor:pointer;  
+}  
+  
+.btn-s.prim{  
+  background:var(--accent);  
+  color:#fff;  
+}  
+  
+.btn-s.pink{  
+  background:var(--inj-accent);  
+  color:#fff;  
+}  
 
-@media(max-width:640px){
+.btn-s.gold{
+  background:var(--game-accent);
+  color:#1a1a2e;
+}
+  
+.btn-s.sec{  
+  border:1px solid var(--border);  
+  background:transparent;  
+  color:var(--text-primary);  
+}  
+  
+.btn-s.green{  
+  background:var(--success);  
+  color:#fff;  
+}  
+  
+.toggle-row{  
+  display:flex;  
+  align-items:center;  
+  justify-content:space-between;  
+  gap:15px;  
+  margin-bottom:16px;  
+  padding:12px 14px;  
+  border:1px solid var(--border);  
+  border-radius:12px;  
+  background:var(--accent-soft);  
+}  
+  
+.toggle-row.inj{  
+  border-color:var(--inj-border);  
+  background:var(--inj-soft);  
+}  
+  
+.toggle{  
+  position:relative;  
+  width:48px;  
+  height:26px;  
+  border-radius:13px;  
+  background:#2e2e48;  
+  cursor:pointer;  
+  transition:.25s;  
+}  
+  
+.toggle.on{  
+  background:var(--accent);  
+}  
+  
+.toggle.inj.on{  
+  background:var(--inj-accent);  
+}  
+  
+.toggle::after{  
+  content:"";  
+  position:absolute;  
+  top:3px;  
+  left:3px;  
+  width:20px;  
+  height:20px;  
+  border-radius:50%;  
+  background:#fff;  
+  transition:.25s;  
+}  
+  
+.toggle.on::after{  
+  transform:translateX(22px);  
+}  
+  
+.tier-block{  
+  margin-bottom:12px;  
+  padding:14px;  
+  border-radius:12px;  
+  background:rgba(0,0,0,.2);  
+}  
+  
+.tier-block.inj{  
+  border-left:3px solid var(--inj-accent);  
+}  
+  
+.tier-block h4{  
+  display:flex;  
+  justify-content:space-between;  
+  gap:10px;  
+  margin-bottom:10px;  
+  font-size:14px;  
+}  
+  
+.tier-block h4 span{  
+  color:var(--success);  
+  font-size:13px;  
+}  
+  
+.expiry-setting{  
+  display:grid;  
+  grid-template-columns:1fr 1fr;  
+  gap:8px;  
+  margin-top:6px;  
+}  
+  
+.hint{  
+  margin-top:4px;  
+  color:var(--text-secondary);  
+  font-size:12px;  
+}  
+  
+.hint.good{  
+  color:var(--success);  
+}  
+  
+.passerr{  
+  display:none;  
+  margin-top:6px;  
+  color:var(--danger);  
+  font-size:13px;  
+}  
+  
+.log-box{  
+  max-height:200px;  
+  overflow-y:auto;  
+  margin-top:8px;  
+  padding:10px;  
+  border-radius:10px;  
+  background:rgba(0,0,0,.25);  
+  font-size:12px;  
+}  
+  
+.log-entry{  
+  padding:5px 0;  
+  border-bottom:1px solid rgba(99,102,241,.1);  
+}  
+  
+.log-entry:last-child{  
+  border-bottom:0;  
+}  
+  
+.section-title{  
+  margin:30px 0 15px;  
+  padding-bottom:8px;  
+  border-bottom:2px solid var(--border);  
+  font-size:18px;  
+  font-weight:700;  
+}  
+  
+.section-title span{  
+  color:var(--accent-light);  
+}  
+  
+.section-title.inj{  
+  border-bottom-color:var(--inj-border);  
+}  
+  
+.section-title.inj span{  
+  color:var(--inj-accent-light);  
+}  
 
-  body{
-    padding:12px 10px 20px;
-  }
+.section-title.game{
+  border-bottom-color:var(--game-border);
+}
 
-  .theme-btn{
-    width:40px;
-    height:40px;
-  }
+.section-title.game span{
+  color:var(--game-accent-light);
+}
+  
+.loading{  
+  grid-column:1/-1;  
+  padding:60px 20px;  
+  color:var(--text-secondary);  
+  text-align:center;  
+}  
+  
+.credit{  
+  margin-top:40px;  
+  padding-bottom:80px;  
+  color:var(--text-secondary);  
+  text-align:center;  
+  font-size:13px;  
+}  
+  
+.credit span{  
+  color:var(--accent-light);  
+  font-weight:600;  
+}  
+  
+/* MOBILE */  
+  
+@media(max-width:640px){  
+  
+  body{  
+    padding:12px 10px 20px;  
+  }  
+  
+  .theme-btn{  
+    width:40px;  
+    height:40px;  
+  }  
+  
+  .logo-badge{  
+    max-width:calc(100% - 55px);  
+    font-size:9px;  
+  }  
+  
+  h1{  
+    font-size:2.2rem;  
+  }  
+  
+  .subtitle{  
+    font-size:13px;  
+  }  
+  
+  .tabs-container{  
+    gap:7px;  
+  }  
+  
+  .tab-btn{  
+    padding:10px 16px;  
+    font-size:13px;  
+  }  
+  
+  .stats-row{  
+    grid-template-columns:repeat(2,1fr);  
+    gap:8px;  
+  }  
 
-  .logo-badge{
-    max-width:calc(100% - 55px);
-    font-size:9px;
-  }
-
-  h1{
-    font-size:2.2rem;
-  }
-
-  .subtitle{
-    font-size:13px;
-  }
-
-  .tabs-container{
-    gap:7px;
-  }
-
-  .tab-btn{
-    padding:10px 16px;
-    font-size:13px;
-  }
-
-  .stats-row{
+  .game-stats-row{
     grid-template-columns:repeat(2,1fr);
     gap:8px;
   }
+  
+  .stat-card .num{  
+    font-size:20px;  
+  }  
+  
+  .grid{  
+    grid-template-columns:1fr;  
+    gap:12px;  
+  }  
+  
+  .card{  
+    padding:20px 14px;  
+  }  
 
-  .stat-card .num{
-    font-size:20px;
+  .game-area{
+    height:320px;
   }
+  
+  .admin-fab{  
+    right:12px;  
+    bottom:16px;  
+    padding:12px 14px;  
+    font-size:13px;  
+  }  
+  
+  .logout-btn{  
+    right:100px;  
+    bottom:16px;  
+    padding:12px 14px;  
+    font-size:13px;  
+  }  
+  
+  .modal-wrap{  
+    padding:10px;  
+  }  
+  
+  .modal{  
+    margin:1vh auto;  
+    padding:18px;  
+    border-radius:16px;  
+  }  
+  
+  .expiry-setting{  
+    grid-template-columns:1fr 1fr;  
+  }  
+  
+  .btn-s{  
+    flex:1 1 auto;  
+  }  
+}  
+  
+@media(max-width:380px){  
+  
+  .tab-btn{  
+    width:100%;  
+  }  
+  
+  .expiry-setting{  
+    grid-template-columns:1fr;  
+  }  
+  
+  .logout-btn{  
+    right:92px;  
+  }  
+}  
+</style>  </head>  <body>  <script>  
+/* ============================================================  
+   FIREBASE CONFIG  
+   ============================================================ */  
+  
+const firebaseConfig = {  
+  apiKey: "AIzaSyC39FXzIevjKBQ0izhzt-LwKZ3BTi4Rxxk",  
+  authDomain: "nichookeys.firebaseapp.com",  
+  databaseURL: "https://nichookeys-default-rtdb.asia-southeast1.firebasedatabase.app",  
+  projectId: "nichookeys",  
+  storageBucket: "nichookeys.firebasestorage.app",  
+  messagingSenderId: "928130308681",  
+  appId: "1:928130308681:web:bb87c613577f8803b53d98"  
+};  
+  
+firebase.initializeApp(firebaseConfig);  
+const db = firebase.database();  
+</script>  <div class="container">  <header>  <button  
+class="theme-btn"  
+id="themeBtn"  
+onclick="toggleTheme()"  
+title="Toggle theme">
+🌙
+</button>
 
-  .grid{
-    grid-template-columns:1fr;
-    gap:12px;
-  }
-
-  .card{
-    padding:20px 14px;
-  }
-
-  .admin-fab{
-    right:12px;
-    bottom:16px;
-    padding:12px 14px;
-    font-size:13px;
-  }
-
-  .logout-btn{
-    right:100px;
-    bottom:16px;
-    padding:12px 14px;
-    font-size:13px;
-  }
-
-  .modal-wrap{
-    padding:10px;
-  }
-
-  .modal{
-    margin:1vh auto;
-    padding:18px;
-    border-radius:16px;
-  }
-
-  .expiry-setting{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .btn-s{
-    flex:1 1 auto;
-  }
-}
-
-@media(max-width:380px){
-
-  .tab-btn{
-    width:100%;
-  }
-
-  .expiry-setting{
-    grid-template-columns:1fr;
-  }
-
-  .logout-btn{
-    right:92px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<script>
-/* ============================================================
-   FIREBASE CONFIG
-   ============================================================ */
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC39FXzIevjKBQ0izhzt-LwKZ3BTi4Rxxk",
-  authDomain: "nichookeys.firebaseapp.com",
-  databaseURL: "https://nichookeys-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "nichookeys",
-  storageBucket: "nichookeys.firebasestorage.app",
-  messagingSenderId: "928130308681",
-  appId: "1:928130308681:web:bb87c613577f8803b53d98"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-</script>
-
-
-<div class="container">
-
-<header>
-
-  <button
-    class="theme-btn"
-    id="themeBtn"
-    onclick="toggleTheme()"
-    title="Toggle theme">
-    🌙
-  </button>
-
-  <div class="logo-badge">
-    JOHN N1CHO — KEY DISTRIBUTION
-  </div>
-
-  <h1>
-    N1<span>CHO</span>O
-  </h1>
-
-  <p class="subtitle">
-    Select category below → Wait → Get Key → Auto-Locked after claim
-  </p>
-
-  <div class="status-bar">
-    <span
-      id="sysBadge"
-      class="status-badge status-online">
-      <span class="pulse-dot"></span>
-      Connecting...
+  <div class="logo-badge">  
+    JOHN N1CHO — KEY DISTRIBUTION  
+  </div>    <h1>  
+    N1<span>CHO</span>O  
+  </h1>    <p class="subtitle">  
+    Select category below → Wait → Get Key → Auto-Locked after claim. Or play games to earn points and redeem keys!  
+  </p>    <div class="status-bar">  
+    <span  
+      id="sysBadge"  
+      class="status-badge status-online">  
+      <span class="pulse-dot"></span>  
+      Connecting...  
+    </span>  
+    <span id="pointsBadge" class="status-badge points-badge">
+      <span style="font-size:15px">★</span>
+      <span id="pointsBadgeVal">0</span> PTS
     </span>
-  </div>
+  </div>  </header>  <!-- TABS -->  <div class="tabs-container">  <button  
+id="containerTabBtn"  
+class="tab-btn active"  
+onclick="switchTab('container')">
+📦 Container Keys
+</button>
 
-</header>
+<button  
+id="injectorTabBtn"  
+class="tab-btn injector"  
+onclick="switchTab('injector')">
+💉 Injector Keys
+</button>
 
+<button
+id="gameTabBtn"
+class="tab-btn game"
+onclick="switchTab('game')">
+🎮 Play & Earn
+</button>
 
-<!-- TABS -->
+</div>  <!-- NOTIFICATION -->  <div  
+  id="notificationBar"  
+  class="notification-bar">  <span id="notificationText"></span>
 
-<div class="tabs-container">
+</div>  <!-- ============================================================  
+     CONTAINER  
+     ============================================================ -->  <div  
+  id="containerTab"  
+  class="tab-content active">    <div class="stats-row">  <div class="stat-card today">  
+  <div  
+    class="num"  
+    id="c-claimsToday">  
+    0  
+  </div>  
+  <div class="label">  
+    Claimed Today  
+  </div>  
+</div>  
 
-  <button
-    id="containerTabBtn"
-    class="tab-btn active"
-    onclick="switchTab('container')">
-    📦 Container Keys
-  </button>
+<div class="stat-card locked">  
+  <div  
+    class="num"  
+    id="c-locked">  
+    0  
+  </div>  
+  <div class="label">  
+    Locked For You  
+  </div>  
+</div>  
 
-  <button
-    id="injectorTabBtn"
-    class="tab-btn injector"
-    onclick="switchTab('injector')">
-    💉 Injector Keys
-  </button>
+<div class="stat-card keys">  
+  <div  
+    class="num"  
+    id="c-keysLeft">  
+    0  
+  </div>  
+  <div class="label">  
+    Keys Available  
+  </div>  
+</div>  
 
+<div class="stat-card limit">  
+  <div  
+    class="num"  
+    id="c-limit">  
+    0/∞  
+  </div>  
+  <div class="label">  
+    Daily Limit  
+  </div>  
 </div>
 
-
-<!-- NOTIFICATION -->
-
-<div
-  id="notificationBar"
-  class="notification-bar">
-
-  <span id="notificationText"></span>
-
+  </div>    <div  
+    id="c-grid"  
+    class="grid">  <div class="loading">  
+  ⏳ Connecting to database...  
 </div>
 
+  </div>  </div>  <!-- ============================================================  
+     INJECTOR  
+     ============================================================ -->  <div  
+  id="injectorTab"  
+  class="tab-content">    <div class="stats-row">  <div class="stat-card today injector">  
+  <div  
+    class="num"  
+    id="i-claimsToday">  
+    0  
+  </div>  
+  <div class="label">  
+    Claimed Today  
+  </div>  
+</div>  
+
+<div class="stat-card locked injector">  
+  <div  
+    class="num"  
+    id="i-locked">  
+    0  
+  </div>  
+  <div class="label">  
+    Locked For You  
+  </div>  
+</div>  
+
+<div class="stat-card keys injector">  
+  <div  
+    class="num"  
+    id="i-keysLeft">  
+    0  
+  </div>  
+  <div class="label">  
+    Keys Available  
+  </div>  
+</div>  
+
+<div class="stat-card limit injector">  
+  <div  
+    class="num"  
+    id="i-limit">  
+    0/∞  
+  </div>  
+  <div class="label">  
+    Daily Limit  
+  </div>  
+</div>
+
+  </div>    <div  
+    id="i-grid"  
+    class="grid">  <div class="loading">  
+  ⏳ Connecting to database...  
+</div>
+
+  </div>  </div>  
 
 <!-- ============================================================
-     CONTAINER
+     PLAY & EARN — GAME TAB
      ============================================================ -->
+<div id="gameTab" class="tab-content">
 
-<div
-  id="containerTab"
-  class="tab-content active">
-
-  <div class="stats-row">
-
+  <div class="game-stats-row">
+    <div class="stat-card game">
+      <div class="num" id="g-totalPoints">0</div>
+      <div class="label">Total Points</div>
+    </div>
     <div class="stat-card today">
-      <div
-        class="num"
-        id="c-claimsToday">
-        0
-      </div>
-      <div class="label">
-        Claimed Today
-      </div>
+      <div class="num" id="g-sessionPoints">0</div>
+      <div class="label">Session Earned</div>
     </div>
-
-    <div class="stat-card locked">
-      <div
-        class="num"
-        id="c-locked">
-        0
-      </div>
-      <div class="label">
-        Locked For You
-      </div>
-    </div>
-
     <div class="stat-card keys">
-      <div
-        class="num"
-        id="c-keysLeft">
-        0
-      </div>
-      <div class="label">
-        Keys Available
-      </div>
+      <div class="num" id="g-bestScore">0</div>
+      <div class="label">Best Score</div>
     </div>
-
     <div class="stat-card limit">
-      <div
-        class="num"
-        id="c-limit">
-        0/∞
-      </div>
-      <div class="label">
-        Daily Limit
-      </div>
+      <div class="num" id="g-gamesPlayed">0</div>
+      <div class="label">Games Played</div>
     </div>
-
   </div>
 
-  <div
-    id="c-grid"
-    class="grid">
-
-    <div class="loading">
-      ⏳ Connecting to database...
+  <div class="game-wrap">
+    <div class="game-hud">
+      <div class="hud-item">Score: <span class="hud-val" id="hudScore">0</span></div>
+      <div class="hud-item">Lives: <span class="hud-val" id="hudLives">♥♥♥</span></div>
+      <div class="hud-item">Combo: <span class="hud-val" id="hudCombo">x1</span></div>
+      <div class="hud-item">Time: <span class="hud-val" id="hudTime">0s</span></div>
     </div>
 
-  </div>
-
-</div>
-
-
-<!-- ============================================================
-     INJECTOR
-     ============================================================ -->
-
-<div
-  id="injectorTab"
-  class="tab-content">
-
-  <div class="stats-row">
-
-    <div class="stat-card today injector">
-      <div
-        class="num"
-        id="i-claimsToday">
-        0
-      </div>
-      <div class="label">
-        Claimed Today
+    <div class="game-area" id="gameArea">
+      <div class="game-overlay" id="gameOverlay">
+        <h3 id="overlayTitle">★ KEY CATCH ★</h3>
+        <p id="overlayText">Tap the falling <strong style="color:#fbbf24">keys</strong> to earn points. Avoid the <strong style="color:#ef4444">bombs</strong>! The longer you survive, the more points you earn (passive +2/sec). 3 lives — tap a bomb and lose one.</p>
+        <button class="game-btn" id="gameStartBtn" onclick="startGame()">▶ START GAME</button>
       </div>
     </div>
 
-    <div class="stat-card locked injector">
-      <div
-        class="num"
-        id="i-locked">
-        0
-      </div>
-      <div class="label">
-        Locked For You
+    <div class="redeem-section">
+      <h3>🎁 REDEEM POINTS → KEYS</h3>
+      <div class="redeem-grid" id="redeemGrid">
+        <div class="loading">⏳ Loading...</div>
       </div>
     </div>
-
-    <div class="stat-card keys injector">
-      <div
-        class="num"
-        id="i-keysLeft">
-        0
-      </div>
-      <div class="label">
-        Keys Available
-      </div>
-    </div>
-
-    <div class="stat-card limit injector">
-      <div
-        class="num"
-        id="i-limit">
-        0/∞
-      </div>
-      <div class="label">
-        Daily Limit
-      </div>
-    </div>
-
-  </div>
-
-  <div
-    id="i-grid"
-    class="grid">
-
-    <div class="loading">
-      ⏳ Connecting to database...
-    </div>
-
   </div>
 
 </div>
 
-
-<div class="credit">
-  Powered by <span>John N1CHO</span>
-</div>
-
-</div>
-
-
-<!-- FLOATING BUTTONS -->
-
-<button
-  class="admin-fab"
-  onclick="openAdmin()">
-  ⚙️ Admin
+  <div class="credit">  
+  Powered by <span>John N1CHO</span>  
+</div>  </div>  <!-- FLOATING BUTTONS -->  <button  
+class="admin-fab"  
+onclick="openAdmin()">
+⚙️ Admin
 </button>
 
-<button
-  id="logoutBtn"
-  class="logout-btn hidden"
-  onclick="logout()">
-  🚪 Logout
+<button  
+id="logoutBtn"  
+class="logout-btn hidden"  
+onclick="logout()">
+🚪 Logout
 </button>
 
+<!-- ============================================================  
+     ADMIN MODAL  
+     ============================================================ -->  <div  
+  id="adminModal"  
+  class="modal-wrap hidden">    <div class="modal">  <h2>  
+  🔐 Admin Control Panel  
 
-<!-- ============================================================
-     ADMIN MODAL
-     ============================================================ -->
+  <button onclick="closeAdmin()">  
+    ✕  
+  </button>  
+</h2>  
 
-<div
-  id="adminModal"
-  class="modal-wrap hidden">
 
-  <div class="modal">
+<!-- SYSTEM STATUS -->  
 
-    <h2>
-      🔐 Admin Control Panel
+<div class="toggle-row">  
 
-      <button onclick="closeAdmin()">
-        ✕
-      </button>
-    </h2>
+  <div>  
+    <strong>  
+      🌐 Global System Status  
+    </strong>  
 
+    <div class="hint">  
+      Disable to stop ALL key claiming  
+    </div>  
+  </div>  
 
-    <!-- SYSTEM STATUS -->
+  <div  
+    style="display:flex;align-items:center;gap:10px">  
 
-    <div class="toggle-row">
+    <span  
+      id="sysLabel"  
+      style="font-weight:600;color:var(--success)">  
+      ONLINE  
+    </span>  
 
-      <div>
-        <strong>
-          🌐 Global System Status
-        </strong>
+    <div  
+      id="sysToggle"  
+      class="toggle on"  
+      onclick="toggleSystem()">  
+    </div>  
 
-        <div class="hint">
-          Disable to stop ALL key claiming
-        </div>
-      </div>
+  </div>  
 
-      <div
-        style="display:flex;align-items:center;gap:10px">
+</div>  
 
-        <span
-          id="sysLabel"
-          style="font-weight:600;color:var(--success)">
-          ONLINE
-        </span>
 
-        <div
-          id="sysToggle"
-          class="toggle on"
-          onclick="toggleSystem()">
-        </div>
+<!-- ANNOUNCEMENT -->  
 
-      </div>
+<div class="field-group">  
 
-    </div>
+  <label>  
+    🔔 Site Announcement  
+  </label>  
 
+  <input  
+    type="text"  
+    id="notificationInput"  
+    placeholder="e.g. ⚠️ Restock at 8PM tonight">  
 
-    <!-- ANNOUNCEMENT -->
+  <div class="btn-row">  
 
-    <div class="field-group">
+    <button  
+      class="btn-s prim"  
+      onclick="saveNotification()">  
+      ✅ Show Banner  
+    </button>  
 
-      <label>
-        🔔 Site Announcement
-      </label>
+    <button  
+      class="btn-s sec"  
+      onclick="clearNotification()">  
+      ❌ Clear  
+    </button>  
 
-      <input
-        type="text"
-        id="notificationInput"
-        placeholder="e.g. ⚠️ Restock at 8PM tonight">
+  </div>  
 
-      <div class="btn-row">
+</div>  
 
-        <button
-          class="btn-s prim"
-          onclick="saveNotification()">
-          ✅ Show Banner
-        </button>
 
-        <button
-          class="btn-s sec"
-          onclick="clearNotification()">
-          ❌ Clear
-        </button>
+<!-- PASSWORD -->  
 
-      </div>
+<div class="field-group">  
 
-    </div>
+  <label>  
+    🔑 Admin Password  
+  </label>  
 
+  <input  
+    type="password"  
+    id="passIn"  
+    placeholder="Set or change password">  
 
-    <!-- PASSWORD -->
+  <div class="btn-row">  
 
-    <div class="field-group">
+    <button  
+      class="btn-s prim"  
+      onclick="savePass()">  
+      💾 Save Password  
+    </button>  
 
-      <label>
-        🔑 Admin Password
-      </label>
+  </div>  
 
-      <input
-        type="password"
-        id="passIn"
-        placeholder="Set or change password">
+  <div  
+    id="passHint"  
+    class="hint">  
+    No password set  
+  </div>  
 
-      <div class="btn-row">
+</div>  
 
-        <button
-          class="btn-s prim"
-          onclick="savePass()">
-          💾 Save Password
-        </button>
 
-      </div>
+<hr style="  
+  border:none;  
+  border-top:1px solid var(--border);  
+  margin:16px 0;  
+">  
 
-      <div
-        id="passHint"
-        class="hint">
-        No password set
-      </div>
 
-    </div>
+<!-- CONTAINER SETTINGS -->  
 
+<h3 class="section-title">  
+  <span>📦</span>  
+  Container Keys  
+</h3>  
 
-    <hr style="
-      border:none;
-      border-top:1px solid var(--border);
-      margin:16px 0;
-    ">
+<div class="field-group">  
 
+  <label>  
+    Daily Limit (0 = unlimited)  
+  </label>  
 
-    <!-- CONTAINER SETTINGS -->
+  <input  
+    type="number"  
+    id="c-dailyLimit"  
+    min="0"  
+    placeholder="e.g. 50">  
 
-    <h3 class="section-title">
-      <span>📦</span>
-      Container Keys
-    </h3>
+</div>  
 
-    <div class="field-group">
+<div id="c-tierList"></div>  
 
-      <label>
-        Daily Limit (0 = unlimited)
-      </label>
 
-      <input
-        type="number"
-        id="c-dailyLimit"
-        min="0"
-        placeholder="e.g. 50">
+<!-- INJECTOR SETTINGS -->  
 
-    </div>
+<h3 class="section-title inj">  
+  <span>💉</span>  
+  Injector Keys  
+</h3>  
 
-    <div id="c-tierList"></div>
+<div class="field-group">  
 
+  <label>  
+    Daily Limit (0 = unlimited)  
+  </label>  
 
-    <!-- INJECTOR SETTINGS -->
+  <input  
+    type="number"  
+    id="i-dailyLimit"  
+    min="0"  
+    placeholder="e.g. 50">  
 
-    <h3 class="section-title inj">
-      <span>💉</span>
-      Injector Keys
-    </h3>
+</div>  
 
-    <div class="field-group">
+<div id="i-tierList"></div>  
 
-      <label>
-        Daily Limit (0 = unlimited)
-      </label>
 
-      <input
-        type="number"
-        id="i-dailyLimit"
-        min="0"
-        placeholder="e.g. 50">
+<!-- PLAY & EARN SETTINGS -->
 
-    </div>
+<h3 class="section-title game">
+  <span>🎮</span>
+  Play & Earn — Points Costs
+</h3>
 
-    <div id="i-tierList"></div>
+<div class="hint" style="margin-bottom:10px">
+  Set how many points each tier costs to redeem via the game. Players earn +2/sec while playing + bonus per key tapped.
+</div>
 
+<div id="pointsCostList"></div>
 
-    <hr style="
-      border:none;
-      border-top:1px solid var(--border);
-      margin:16px 0;
-    ">
-
-
-    <!-- HISTORY -->
-
-    <h3 style="margin-bottom:10px">
-      📋 Claim History Log
-    </h3>
-
-    <div
-      class="log-box"
-      id="historyLog">
-
-      <div class="hint">
-        No claims recorded yet
-      </div>
-
-    </div>
-
-    <div
-      class="btn-row"
-      style="margin:8px 0 16px">
-
-      <button
-        class="btn-s green"
-        onclick="exportHistory()">
-        📤 Export Log
-      </button>
-
-      <button
-        class="btn-s sec"
-        onclick="clearHistory()">
-        🗑️ Clear Log
-      </button>
-
-    </div>
-
-
-    <div class="btn-row">
-
-      <button
-        class="btn-s sec"
-        onclick="closeAdmin()">
-        Close Panel
-      </button>
-
-    </div>
-
-  </div>
+<div class="btn-row" style="margin:8px 0 16px">
+  <button class="btn-s gold" onclick="savePointsCosts()">💾 Save Points Costs</button>
+  <button class="btn-s sec" onclick="resetAllPoints()">🗑️ Reset All Player Points</button>
 </div>
 
 
-<!-- ============================================================
-     PASSWORD MODAL
-     ============================================================ -->
+<hr style="  
+  border:none;  
+  border-top:1px solid var(--border);  
+  margin:16px 0;  
+">  
 
-<div
-  id="passModal"
-  class="modal-wrap hidden">
 
-  <div
-    class="modal"
-    style="max-width:400px">
+<!-- HISTORY -->  
 
-    <h3 style="margin-bottom:14px">
-      🔐 Enter Admin Password
-    </h3>
+<h3 style="margin-bottom:10px">  
+  📋 Claim History Log  
+</h3>  
 
-    <input
-      type="password"
-      id="passCheck"
-      placeholder="Type password here...">
+<div  
+  class="log-box"  
+  id="historyLog">  
 
-    <p
-      id="passErr"
-      class="passerr">
-      ❌ Wrong password — try again
-    </p>
+  <div class="hint">  
+    No claims recorded yet  
+  </div>  
 
-    <div
-      class="btn-row"
-      style="margin-top:8px">
+</div>  
 
-      <button
-        class="btn-s sec"
-        onclick="closePassModal()">
-        Cancel
-      </button>
+<div  
+  class="btn-row"  
+  style="margin:8px 0 16px">  
 
-      <button
-        class="btn-s prim"
-        onclick="verifyPass()">
-        Submit
-      </button>
+  <button  
+    class="btn-s green"  
+    onclick="exportHistory()">  
+    📤 Export Log  
+  </button>  
 
-    </div>
+  <button  
+    class="btn-s sec"  
+    onclick="clearHistory()">  
+    🗑️ Clear Log  
+  </button>  
 
-  </div>
+</div>  
+
+
+<div class="btn-row">  
+
+  <button  
+    class="btn-s sec"  
+    onclick="closeAdmin()">  
+    Close Panel  
+  </button>  
+
 </div>
 
+  </div>  
+</div>  <!-- ============================================================  
+     PASSWORD MODAL  
+     ============================================================ -->  <div  
+  id="passModal"  
+  class="modal-wrap hidden">    <div  
+    class="modal"  
+    style="max-width:400px">  <h3 style="margin-bottom:14px">  
+  🔐 Enter Admin Password  
+</h3>  
 
-<script>
-/* ============================================================
-   DEFAULT DATA
-   ============================================================ */
+<input  
+  type="password"  
+  id="passCheck"  
+  placeholder="Type password here...">  
 
-const DEFAULTS = {
+<p  
+  id="passErr"  
+  class="passerr">  
+  ❌ Wrong password — try again  
+</p>  
 
-  systemEnabled:true,
+<div  
+  class="btn-row"  
+  style="margin-top:8px">  
 
-  adminPassword:"",
+  <button  
+    class="btn-s sec"  
+    onclick="closePassModal()">  
+    Cancel  
+  </button>  
 
-  notification:"",
+  <button  
+    class="btn-s prim"  
+    onclick="verifyPass()">  
+    Submit  
+  </button>  
 
-  container:{
-    dailyLimit:0,
+</div>
 
-    tiers:{
-      "c-1d":{
-        name:"1-Day Container",
-        days:1,
-        waitSeconds:15,
-        lockHours:24,
-        keys:[]
-      },
-
-      "c-3d":{
-        name:"3-Day Container",
-        days:3,
-        waitSeconds:25,
-        lockHours:72,
-        keys:[]
-      },
-
-      "c-7d":{
-        name:"7-Day Container",
-        days:7,
-        waitSeconds:40,
-        lockHours:168,
-        keys:[]
-      }
-    }
+  </div>  
+</div>  <script>  
+/* ============================================================  
+   DEFAULT DATA  
+   ============================================================ */  
+  
+const DEFAULTS = {  
+  
+  systemEnabled:true,  
+  
+  adminPassword:"",  
+  
+  notification:"",  
+  
+  container:{  
+    dailyLimit:0,  
+  
+    tiers:{  
+      "c-1d":{  
+        name:"1-Day Container",  
+        days:1,  
+        waitSeconds:15,  
+        lockHours:24,  
+        keys:[]  
+      },  
+  
+      "c-3d":{  
+        name:"3-Day Container",  
+        days:3,  
+        waitSeconds:25,  
+        lockHours:72,  
+        keys:[]  
+      },  
+  
+      "c-7d":{  
+        name:"7-Day Container",  
+        days:7,  
+        waitSeconds:40,  
+        lockHours:168,  
+        keys:[]  
+      }  
+    }  
+  },  
+  
+  injector:{  
+    dailyLimit:0,  
+  
+    tiers:{  
+      "i-1d":{  
+        name:"1-Day Injector",  
+        days:1,  
+        waitSeconds:20,  
+        lockHours:24,  
+        keys:[]  
+      },  
+  
+      "i-3d":{  
+        name:"3-Day Injector",  
+        days:3,  
+        waitSeconds:35,  
+        lockHours:72,  
+        keys:[]  
+      },  
+  
+      "i-7d":{  
+        name:"7-Day Injector",  
+        days:7,  
+        waitSeconds:50,  
+        lockHours:168,  
+        keys:[]  
+      }  
+    }  
   },
 
-  injector:{
-    dailyLimit:0,
+  pointsCosts:{
+    "c-1d":500,
+    "c-3d":1500,
+    "c-7d":3500,
+    "i-1d":500,
+    "i-3d":1500,
+    "i-7d":3500
+  }
+};  
+  
+  
+/* ============================================================  
+   STATE  
+   ============================================================ */  
+  
+let data = clone(DEFAULTS);  
+  
+let adminPass = "";  
+  
+let currentTab = "container";  
+  
+const timers = {};  
+const lockTimers = {};  
+  
+const STORAGE_KEY = "nichoo_admin_auth";  
+const CLAIM_KEY_PREFIX = "nichoo_claim_";  
+const STATS_KEY_CLAIMS = "nichoo_claims_";  
+const STATS_DATE_KEY = "nichoo_claims_date_";  
+const HISTORY_KEY = "nichoo_claim_history";  
+const THEME_KEY = "nichoo_theme";  
+const POINTS_KEY = "nichoo_points";
+const GAME_BEST_KEY = "nichoo_game_best";
+const GAME_COUNT_KEY = "nichoo_game_count";
+  
+  
+/* ============================================================  
+   HELPERS  
+   ============================================================ */  
+  
+function clone(obj){  
+  return JSON.parse(JSON.stringify(obj));  
+}  
+  
+function escapeHtml(value){  
+  
+  return String(value ?? "")  
+    .replace(/&/g,"&amp;")  
+    .replace(/</g,"&lt;")  
+    .replace(/>/g,"&gt;")  
+    .replace(/"/g,"&quot;")  
+    .replace(/'/g,"&#039;");  
+}  
+  
+  
+/* ============================================================  
+   THEME  
+   ============================================================ */  
+  
+function toggleTheme(){  
+  
+  const body = document.body;  
+  
+  const isLight =  
+    body.getAttribute("data-theme") === "light";  
+  
+  if(isLight){  
+  
+    body.removeAttribute("data-theme");  
+  
+    localStorage.setItem(  
+      THEME_KEY,  
+      "dark"  
+    );  
+  
+    document.getElementById(  
+      "themeBtn"  
+    ).textContent = "🌙";  
+  
+  }else{  
+  
+    body.setAttribute(  
+      "data-theme",  
+      "light"  
+    );  
+  
+    localStorage.setItem(  
+      THEME_KEY,  
+      "light"  
+    );  
+  
+    document.getElementById(  
+      "themeBtn"  
+    ).textContent = "☀️";  
+  }  
+}  
+  
+  
+function loadTheme(){  
+  
+  const saved =  
+    localStorage.getItem(THEME_KEY);  
+  
+  if(saved === "light"){  
+  
+    document.body.setAttribute(  
+      "data-theme",  
+      "light"  
+    );  
+  
+    document.getElementById(  
+      "themeBtn"  
+    ).textContent = "☀️";  
+  
+  }else{  
+  
+    document.getElementById(  
+      "themeBtn"  
+    ).textContent = "🌙";  
+  }  
+}  
+  
+  
+/* ============================================================  
+   TABS  
+   ============================================================ */  
+  
+function switchTab(tab){  
+  
+  currentTab = tab;  
+  
+  document  
+    .querySelectorAll(".tab-btn")  
+    .forEach(btn =>  
+      btn.classList.remove("active")  
+    );  
+  
+  document  
+    .querySelectorAll(".tab-content")  
+    .forEach(content =>  
+      content.classList.remove("active")  
+    );  
+  
+  document.getElementById(tab + "TabBtn").classList.add("active");
+  document.getElementById(tab + "Tab").classList.add("active");
 
-    tiers:{
-      "i-1d":{
-        name:"1-Day Injector",
-        days:1,
-        waitSeconds:20,
-        lockHours:24,
-        keys:[]
-      },
+  if(tab === "game"){
+    renderRedeemGrid();
+    updateGameStats();
+  }
+}  
+  
+  
+/* ============================================================  
+   FIREBASE DATA  
+   ============================================================ */  
+  
+function applyFirebaseData(val){  
+  
+  data = clone(DEFAULTS);  
+  
+  if(!val){  
+  
+    return;  
+  }  
+  
+  if(  
+    typeof val.systemEnabled === "boolean"  
+  ){  
+  
+    data.systemEnabled =  
+      val.systemEnabled;  
+  }  
+  
+  if(  
+    typeof val.adminPassword === "string"  
+  ){  
+  
+    data.adminPassword =  
+      val.adminPassword;  
+  }  
+  
+  if(  
+    typeof val.notification === "string"  
+  ){  
+  
+    data.notification =  
+      val.notification;  
+  }  
 
-      "i-3d":{
-        name:"3-Day Injector",
-        days:3,
-        waitSeconds:35,
-        lockHours:72,
-        keys:[]
-      },
-
-      "i-7d":{
-        name:"7-Day Injector",
-        days:7,
-        waitSeconds:50,
-        lockHours:168,
-        keys:[]
+  if(val.pointsCosts && typeof val.pointsCosts === "object"){
+    Object.keys(data.pointsCosts).forEach(k => {
+      if(val.pointsCosts[k] !== undefined){
+        data.pointsCosts[k] = Math.max(1, Number(val.pointsCosts[k]) || data.pointsCosts[k]);
       }
-    }
-  }
-};
-
-
-/* ============================================================
-   STATE
-   ============================================================ */
-
-let data = clone(DEFAULTS);
-
-let adminPass = "";
-
-let currentTab = "container";
-
-const timers = {};
-const lockTimers = {};
-
-const STORAGE_KEY = "nichoo_admin_auth";
-const CLAIM_KEY_PREFIX = "nichoo_claim_";
-const STATS_KEY_CLAIMS = "nichoo_claims_";
-const STATS_DATE_KEY = "nichoo_claims_date_";
-const HISTORY_KEY = "nichoo_claim_history";
-const THEME_KEY = "nichoo_theme";
-
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-
-function clone(obj){
-  return JSON.parse(JSON.stringify(obj));
-}
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-
-/* ============================================================
-   THEME
-   ============================================================ */
-
-function toggleTheme(){
-
-  const body = document.body;
-
-  const isLight =
-    body.getAttribute("data-theme") === "light";
-
-  if(isLight){
-
-    body.removeAttribute("data-theme");
-
-    localStorage.setItem(
-      THEME_KEY,
-      "dark"
-    );
-
-    document.getElementById(
-      "themeBtn"
-    ).textContent = "🌙";
-
-  }else{
-
-    body.setAttribute(
-      "data-theme",
-      "light"
-    );
-
-    localStorage.setItem(
-      THEME_KEY,
-      "light"
-    );
-
-    document.getElementById(
-      "themeBtn"
-    ).textContent = "☀️";
-  }
-}
-
-
-function loadTheme(){
-
-  const saved =
-    localStorage.getItem(THEME_KEY);
-
-  if(saved === "light"){
-
-    document.body.setAttribute(
-      "data-theme",
-      "light"
-    );
-
-    document.getElementById(
-      "themeBtn"
-    ).textContent = "☀️";
-
-  }else{
-
-    document.getElementById(
-      "themeBtn"
-    ).textContent = "🌙";
-  }
-}
-
-
-/* ============================================================
-   TABS
-   ============================================================ */
-
-function switchTab(tab){
-
-  currentTab = tab;
-
-  document
-    .querySelectorAll(".tab-btn")
-    .forEach(btn =>
-      btn.classList.remove("active")
-    );
-
-  document
-    .querySelectorAll(".tab-content")
-    .forEach(content =>
-      content.classList.remove("active")
-    );
-
-  if(tab === "container"){
-
-    document
-      .getElementById("containerTabBtn")
-      .classList.add("active");
-
-  }else{
-
-    document
-      .getElementById("injectorTabBtn")
-      .classList.add("active");
-  }
-
-  document
-    .getElementById(tab + "Tab")
-    .classList.add("active");
-}
-
-
-/* ============================================================
-   FIREBASE DATA
-   ============================================================ */
-
-function applyFirebaseData(val){
-
-  data = clone(DEFAULTS);
-
-  if(!val){
-
-    return;
-  }
-
-  if(
-    typeof val.systemEnabled === "boolean"
-  ){
-
-    data.systemEnabled =
-      val.systemEnabled;
-  }
-
-  if(
-    typeof val.adminPassword === "string"
-  ){
-
-    data.adminPassword =
-      val.adminPassword;
-  }
-
-  if(
-    typeof val.notification === "string"
-  ){
-
-    data.notification =
-      val.notification;
-  }
-
-
-  ["container","injector"].forEach(category => {
-
-    if(!val[category]) return;
-
-    if(
-      val[category].dailyLimit !== undefined
-    ){
-
-      data[category].dailyLimit =
-        Number(val[category].dailyLimit) || 0;
-    }
-
-    if(val[category].tiers){
-
-      Object.entries(
-        val[category].tiers
-      ).forEach(([id,tier]) => {
-
-        if(
-          !data[category].tiers[id]
-        ){
-
-          return;
-        }
-
-        const target =
-          data[category].tiers[id];
-
-        if(tier.name !== undefined)
-          target.name = String(tier.name);
-
-        if(tier.days !== undefined)
-          target.days = Number(tier.days) || 1;
-
-        if(tier.waitSeconds !== undefined)
-          target.waitSeconds =
-            Math.max(
-              1,
-              Number(tier.waitSeconds) || 1
-            );
-
-        if(tier.lockHours !== undefined)
-          target.lockHours =
-            Math.max(
-              1,
-              Number(tier.lockHours) || 1
-            );
-
-        if(Array.isArray(tier.keys))
-          target.keys = tier.keys
-            .map(String)
-            .filter(Boolean);
-
-      });
-    }
-  });
-}
-
-
-/* ============================================================
-   FIREBASE LISTENER
-   ============================================================ */
-
-db.ref("/").on(
-
-  "value",
-
-  snap => {
-
-    try{
-
-      const val = snap.val();
-
-      if(!val){
-
-        db.ref("/").set(
-          clone(DEFAULTS)
-        );
-
-        applyFirebaseData(DEFAULTS);
-
-      }else{
-
-        applyFirebaseData(val);
-      }
-
-      adminPass =
-        data.adminPassword || "";
-
-      updateSystemBadge();
-      updateNotification();
-      renderPublic("container");
-      renderPublic("injector");
-      updateStats("container");
-      updateStats("injector");
-      renderHistory();
-
-      const admin =
-        document.getElementById(
-          "adminModal"
-        );
-
-      if(
-        admin &&
-        !admin.classList.contains("hidden")
-      ){
-
-        renderAdmin();
-      }
-
-    }catch(error){
-
-      console.error(
-        "Firebase render error:",
-        error
-      );
-
-      showDatabaseError(error);
-    }
-  },
-
-  error => {
-
-    console.error(
-      "Firebase connection error:",
-      error
-    );
-
-    showDatabaseError(error);
-  }
-);
-
-
-/* ============================================================
-   DATABASE ERROR
-   ============================================================ */
-
-function showDatabaseError(error){
-
-  const message =
-    error && error.message
-      ? error.message
-      : "Unable to connect";
-
-  ["c-grid","i-grid"].forEach(id => {
-
-    const grid =
-      document.getElementById(id);
-
-    if(grid){
-
-      grid.innerHTML = `
-        <div class="offline-card">
-          <h3>⚠️ Database Error</h3>
-          <p>
-            ${escapeHtml(message)}
-          </p>
-          <p style="margin-top:8px">
-            Check your Firebase Realtime Database rules.
-          </p>
-        </div>
-      `;
-    }
-  });
-
-  const badge =
-    document.getElementById("sysBadge");
-
-  badge.className =
-    "status-badge status-offline";
-
-  badge.innerHTML =
-    '<span class="pulse-dot"></span> Database Error';
-}
-
-
-/* ============================================================
-   SYSTEM BADGE
-   ============================================================ */
-
-function updateSystemBadge(){
-
-  const badge =
-    document.getElementById("sysBadge");
-
-  if(data.systemEnabled){
-
-    badge.className =
-      "status-badge status-online";
-
-    badge.innerHTML =
-      '<span class="pulse-dot"></span> System Online';
-
-  }else{
-
-    badge.className =
-      "status-badge status-offline";
-
-    badge.innerHTML =
-      '<span class="pulse-dot"></span> System Offline';
-  }
-}
-
-
-/* ============================================================
-   NOTIFICATION
-   ============================================================ */
-
-function updateNotification(){
-
-  const bar =
-    document.getElementById(
-      "notificationBar"
-    );
-
-  const text =
-    document.getElementById(
-      "notificationText"
-    );
-
-  const input =
-    document.getElementById(
-      "notificationInput"
-    );
-
-  if(
-    data.notification &&
-    data.notification.trim()
-  ){
-
-    bar.classList.add("show");
-
-    text.textContent =
-      data.notification;
-
-    input.value =
-      data.notification;
-
-  }else{
-
-    bar.classList.remove("show");
-
-    text.textContent = "";
-
-    input.value = "";
-  }
-}
-
-
-function saveNotification(){
-
-  const text =
-    document
-      .getElementById("notificationInput")
-      .value
-      .trim();
-
-  db.ref("/notification")
-    .set(text)
-    .then(() => {
-
-      alert(
-        "✅ Notification saved!"
-      );
-
-    })
-    .catch(error => {
-
-      alert(
-        "❌ Failed: " +
-        error.message
-      );
     });
-}
-
-
-function clearNotification(){
-
-  document
-    .getElementById("notificationInput")
-    .value = "";
-
-  db.ref("/notification")
-    .set("")
-    .then(() => {
-
-      alert(
-        "✅ Notification cleared!"
-      );
-
-    })
-    .catch(error => {
-
-      alert(
-        "❌ Failed: " +
-        error.message
-      );
-    });
-}
-
-
-/* ============================================================
-   LOCAL STATS
-   ============================================================ */
-
-function getTodayKey(){
-
-  const d = new Date();
-
-  const y = d.getFullYear();
-
-  const m =
-    String(d.getMonth()+1)
-      .padStart(2,"0");
-
-  const day =
-    String(d.getDate())
-      .padStart(2,"0");
-
-  return `${y}-${m}-${day}`;
-}
-
-
-function incrementClaimCounter(category){
-
-  const today =
-    getTodayKey();
-
-  const dateKey =
-    STATS_DATE_KEY + category;
-
-  const claimKey =
-    STATS_KEY_CLAIMS + category;
-
-  const savedDate =
-    localStorage.getItem(dateKey);
-
-  if(savedDate !== today){
-
-    localStorage.setItem(
-      dateKey,
-      today
-    );
-
-    localStorage.setItem(
-      claimKey,
-      "1"
-    );
-
-  }else{
-
-    const count =
-      parseInt(
-        localStorage.getItem(claimKey) || "0",
-        10
-      );
-
-    localStorage.setItem(
-      claimKey,
-      String(count + 1)
-    );
   }
-}
-
-
-function getClaimsToday(category){
-
-  const today =
-    getTodayKey();
-
-  const savedDate =
-    localStorage.getItem(
-      STATS_DATE_KEY + category
-    );
-
-  if(savedDate !== today)
-    return 0;
-
-  return parseInt(
-    localStorage.getItem(
-      STATS_KEY_CLAIMS + category
-    ) || "0",
-    10
-  );
-}
-
-
-/* ============================================================
-   CLAIM LOCK
-   ============================================================ */
-
-function getClaimLockTime(id){
-
-  const value =
-    localStorage.getItem(
-      CLAIM_KEY_PREFIX + id
-    );
-
-  const timestamp =
-    value ? parseInt(value,10) : 0;
-
-  return Number.isFinite(timestamp)
-    ? timestamp
-    : 0;
-}
-
-
-function setClaimLock(id,timestamp){
-
-  localStorage.setItem(
-    CLAIM_KEY_PREFIX + id,
-    String(timestamp)
-  );
-}
-
-
-function formatDate(timestamp){
-
-  if(!timestamp)
-    return "—";
-
-  const date =
-    new Date(timestamp);
-
-  return date.toLocaleString(
-    "en-US",
-    {
-      month:"short",
-      day:"numeric",
-      year:"numeric",
-      hour:"2-digit",
-      minute:"2-digit"
-    }
-  );
-}
-
-
-function formatTimeRemaining(ms){
-
-  if(ms <= 0)
-    return "AVAILABLE NOW";
-
-  let seconds =
-    Math.floor(ms / 1000);
-
-  const hours =
-    Math.floor(seconds / 3600);
-
-  seconds %= 3600;
-
-  const minutes =
-    Math.floor(seconds / 60);
-
-  seconds %= 60;
-
-  if(hours > 0)
-    return `${hours}h ${minutes}m left`;
-
-  if(minutes > 0)
-    return `${minutes}m ${seconds}s left`;
-
-  return `${seconds}s left`;
-}
-
-
-/* ============================================================
-   STATS
-   ============================================================ */
-
-function updateStats(category){
-
-  const prefix =
-    category === "container"
-      ? "c-"
-      : "i-";
-
-  const catData =
-    data[category] || {
-      dailyLimit:0,
-      tiers:{}
-    };
-
-  const claimsToday =
-    getClaimsToday(category);
-
-  const limit =
-    Number(catData.dailyLimit) || 0;
-
-  document
-    .getElementById(
-      prefix + "claimsToday"
-    )
-    .textContent =
-      claimsToday;
-
-  document
-    .getElementById(
-      prefix + "limit"
-    )
-    .textContent =
-      limit === 0
-        ? `${claimsToday}/∞`
-        : `${claimsToday}/${limit}`;
-
-  let lockedCount = 0;
-  let totalKeys = 0;
-
-  Object.entries(
-    catData.tiers || {}
-  ).forEach(([id,tier]) => {
-
-    if(
-      Date.now() <
-      getClaimLockTime(id)
-    ){
-
-      lockedCount++;
-    }
-
-    totalKeys +=
-      Array.isArray(tier.keys)
-        ? tier.keys.length
-        : 0;
-  });
-
-  document
-    .getElementById(
-      prefix + "locked"
-    )
-    .textContent =
-      lockedCount;
-
-  document
-    .getElementById(
-      prefix + "keysLeft"
-    )
-    .textContent =
-      totalKeys;
-}
-
-
-/* ============================================================
-   PUBLIC CARDS
-   ============================================================ */
-
-function renderPublic(category){
-
-  const catData =
-    data[category] || {
-      dailyLimit:0,
-      tiers:{}
-    };
-
-  const prefix =
-    category === "container"
-      ? "c-"
-      : "i-";
-
-  const grid =
-    document.getElementById(
-      prefix + "grid"
-    );
-
-  const dailyLimit =
-    Number(catData.dailyLimit) || 0;
-
-  const claimsToday =
-    getClaimsToday(category);
-
-  const limitReached =
-    dailyLimit > 0 &&
-    claimsToday >= dailyLimit;
-
-
-  if(!data.systemEnabled){
-
-    grid.innerHTML = `
-      <div class="offline-card">
-        <h3>🚫 System Offline</h3>
-        <p>
-          Key claiming is temporarily disabled.
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  if(limitReached){
-
-    grid.innerHTML = `
-      <div class="offline-card">
-        <h3>⚠️ Daily Limit Reached</h3>
-        <p>
-          Maximum ${dailyLimit} keys per day.
-          Try again tomorrow.
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  const tiers =
-    Object.entries(
-      catData.tiers || {}
-    );
-
-  if(tiers.length === 0){
-
-    grid.innerHTML = `
-      <div class="offline-card">
-        <h3>📭 No Tiers</h3>
-        <p>
-          No key tiers are configured.
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  grid.innerHTML = "";
-
-
-  tiers.forEach(([id,tier]) => {
-
-    const keys =
-      Array.isArray(tier.keys)
-        ? tier.keys
-        : [];
-
-    const remaining =
-      keys.length;
-
-    const wait =
-      Math.max(
-        1,
-        Number(tier.waitSeconds) || 15
-      );
-
-    const lockHours =
-      Math.max(
-        1,
-        Number(tier.lockHours) || 24
-      );
-
-    const lockUntil =
-      getClaimLockTime(id);
-
-    const isLocked =
-      Date.now() < lockUntil;
-
-    const injector =
-      category === "injector";
-
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "card" +
-      (isLocked ? " locked" : "") +
-      (injector ? " injector" : "");
-
-    card.id =
-      `card-${id}`;
-
-
-    card.innerHTML = `
-
-      <div class="card-tier">
-        ${escapeHtml(tier.name)}
-      </div>
-
-      <div class="card-days">
-        ${Number(tier.days) || 1}
-        <span>d</span>
-      </div>
-
-      <div class="card-meta">
-
-        <span>
-          Wait:
-          <strong id="wt-${id}">
-            0/${wait}s
-          </strong>
-        </span>
-
-        <span>
-          Keys Left:
-          <strong id="rm-${id}">
-            ${remaining}
-          </strong>
-        </span>
-
-        <span>
-          Lock:
-          <strong>
-            ${lockHours}h
-          </strong>
-          after claim
-        </span>
-
-      </div>
-
-      ${
-        isLocked
-        ? `
-          <div
-            class="lock-display"
-            id="lock-${id}">
-            🔒 Available:<br>
-            <strong>
-              ${formatDate(lockUntil)}
-            </strong>
-          </div>
-        `
-        : ""
+  
+  
+  ["container","injector"].forEach(category => {  
+  
+    if(!val[category]) return;  
+  
+    if(  
+      val[category].dailyLimit !== undefined  
+    ){  
+  
+      data[category].dailyLimit =  
+        Number(val[category].dailyLimit) || 0;  
+    }  
+  
+    if(val[category].tiers){  
+  
+      Object.entries(  
+        val[category].tiers  
+      ).forEach(([id,tier]) => {  
+  
+        if(  
+          !data[category].tiers[id]  
+        ){  
+  
+          return;  
+        }  
+  
+        const target =  
+          data[category].tiers[id];  
+  
+        if(tier.name !== undefined)  
+          target.name = String(tier.name);  
+  
+        if(tier.days !== undefined)  
+          target.days = Number(tier.days) || 1;  
+  
+        if(tier.waitSeconds !== undefined)  
+          target.waitSeconds =  
+            Math.max(  
+              1,  
+              Number(tier.waitSeconds) || 1  
+            );  
+  
+        if(tier.lockHours !== undefined)  
+          target.lockHours =  
+            Math.max(  
+              1,  
+              Number(tier.lockHours) || 1  
+            );  
+  
+        if(Array.isArray(tier.keys))  
+          target.keys = tier.keys  
+            .map(String)  
+            .filter(Boolean);  
+  
+      });  
+    }  
+  });  
+}  
+  
+  
+/* ============================================================  
+   FIREBASE LISTENER  
+   ============================================================ */  
+  
+db.ref("/").on(  
+  
+  "value",  
+  
+  snap => {  
+  
+    try{  
+  
+      const val = snap.val();  
+  
+      if(!val){  
+  
+        db.ref("/").set(  
+          clone(DEFAULTS)  
+        );  
+  
+        applyFirebaseData(DEFAULTS);  
+  
+      }else{  
+  
+        applyFirebaseData(val);  
+      }  
+  
+      adminPass =  
+        data.adminPassword || "";  
+  
+      updateSystemBadge();  
+      updateNotification();  
+      renderPublic("container");  
+      renderPublic("injector");  
+      updateStats("container");  
+      updateStats("injector");  
+      renderHistory();  
+      updatePointsBadge();
+      if(currentTab === "game"){
+        renderRedeemGrid();
+        updateGameStats();
       }
+  
+      const admin =  
+        document.getElementById(  
+          "adminModal"  
+        );  
+  
+      if(  
+        admin &&  
+        !admin.classList.contains("hidden")  
+      ){  
+  
+        renderAdmin();  
+      }  
+  
+    }catch(error){  
+  
+      console.error(  
+        "Firebase render error:",  
+        error  
+      );  
+  
+      showDatabaseError(error);  
+    }  
+  },  
+  
+  error => {  
+  
+    console.error(  
+      "Firebase connection error:",  
+      error  
+    );  
+  
+    showDatabaseError(error);  
+  }  
+);  
+  
+  
+/* ============================================================  
+   DATABASE ERROR  
+   ============================================================ */  
+  
+function showDatabaseError(error){  
+  
+  const message =  
+    error && error.message  
+      ? error.message  
+      : "Unable to connect";  
+  
+  ["c-grid","i-grid"].forEach(id => {  
+  
+    const grid =  
+      document.getElementById(id);  
+  
+    if(grid){  
+  
+      grid.innerHTML = `  
+        <div class="offline-card">  
+          <h3>⚠️ Database Error</h3>  
+          <p>  
+            ${escapeHtml(message)}  
+          </p>  
+          <p style="margin-top:8px">  
+            Check your Firebase Realtime Database rules.  
+          </p>  
+        </div>  
+      `;  
+    }  
+  });  
+  
+  const badge =  
+    document.getElementById("sysBadge");  
+  
+  badge.className =  
+    "status-badge status-offline";  
+  
+  badge.innerHTML =  
+    '<span class="pulse-dot"></span> Database Error';  
+}  
+  
+  
+/* ============================================================  
+   SYSTEM BADGE  
+   ============================================================ */  
+  
+function updateSystemBadge(){  
+  
+  const badge =  
+    document.getElementById("sysBadge");  
+  
+  if(data.systemEnabled){  
+  
+    badge.className =  
+      "status-badge status-online";  
+  
+    badge.innerHTML =  
+      '<span class="pulse-dot"></span> System Online';  
+  
+  }else{  
+  
+    badge.className =  
+      "status-badge status-offline";  
+  
+    badge.innerHTML =  
+      '<span class="pulse-dot"></span> System Offline';  
+  }  
+}  
+  
+  
+/* ============================================================  
+   NOTIFICATION  
+   ============================================================ */  
+  
+function updateNotification(){  
+  
+  const bar =  
+    document.getElementById(  
+      "notificationBar"  
+    );  
+  
+  const text =  
+    document.getElementById(  
+      "notificationText"  
+    );  
+  
+  const input =  
+    document.getElementById(  
+      "notificationInput"  
+    );  
+  
+  if(  
+    data.notification &&  
+    data.notification.trim()  
+  ){  
+  
+    bar.classList.add("show");  
+  
+    text.textContent =  
+      data.notification;  
+  
+    input.value =  
+      data.notification;  
+  
+  }else{  
+  
+    bar.classList.remove("show");  
+  
+    text.textContent = "";  
+  
+    input.value = "";  
+  }  
+}  
+  
+  
+function saveNotification(){  
+  
+  const text =  
+    document  
+      .getElementById("notificationInput")  
+      .value  
+      .trim();  
+  
+  db.ref("/notification")  
+    .set(text)  
+    .then(() => {  
+  
+      alert(  
+        "✅ Notification saved!"  
+      );  
+  
+    })  
+    .catch(error => {  
+  
+      alert(  
+        "❌ Failed: " +  
+        error.message  
+      );  
+    });  
+}  
+  
+  
+function clearNotification(){  
+  
+  document  
+    .getElementById("notificationInput")  
+    .value = "";  
+  
+  db.ref("/notification")  
+    .set("")  
+    .then(() => {  
+  
+      alert(  
+        "✅ Notification cleared!"  
+      );  
+  
+    })  
+    .catch(error => {  
+  
+      alert(  
+        "❌ Failed: " +  
+        error.message  
+      );  
+    });  
+}  
+  
+  
+/* ============================================================  
+   LOCAL STATS  
+   ============================================================ */  
+  
+function getTodayKey(){  
+  
+  const d = new Date();  
+  
+  const y = d.getFullYear();  
+  
+  const m =  
+    String(d.getMonth()+1)  
+      .padStart(2,"0");  
+  
+  const day =  
+    String(d.getDate())  
+      .padStart(2,"0");  
+  
+  return `${y}-${m}-${day}`;  
+}  
+  
+  
+function incrementClaimCounter(category){  
+  
+  const today =  
+    getTodayKey();  
+  
+  const dateKey =  
+    STATS_DATE_KEY + category;  
+  
+  const claimKey =  
+    STATS_KEY_CLAIMS + category;  
+  
+  const savedDate =  
+    localStorage.getItem(dateKey);  
+  
+  if(savedDate !== today){  
+  
+    localStorage.setItem(  
+      dateKey,  
+      today  
+    );  
+  
+    localStorage.setItem(  
+      claimKey,  
+      "1"  
+    );  
+  
+  }else{  
+  
+    const count =  
+      parseInt(  
+        localStorage.getItem(claimKey) || "0",  
+        10  
+      );  
+  
+    localStorage.setItem(  
+      claimKey,  
+      String(count + 1)  
+    );  
+  }  
+}  
+  
+  
+function getClaimsToday(category){  
+  
+  const today =  
+    getTodayKey();  
+  
+  const savedDate =  
+    localStorage.getItem(  
+      STATS_DATE_KEY + category  
+    );  
+  
+  if(savedDate !== today)  
+    return 0;  
+  
+  return parseInt(  
+    localStorage.getItem(  
+      STATS_KEY_CLAIMS + category  
+    ) || "0",  
+    10  
+  );  
+}  
+  
+  
+/* ============================================================  
+   CLAIM LOCK  
+   ============================================================ */  
+  
+function getClaimLockTime(id){  
+  
+  const value =  
+    localStorage.getItem(  
+      CLAIM_KEY_PREFIX + id  
+    );  
+  
+  const timestamp =  
+    value ? parseInt(value,10) : 0;  
+  
+  return Number.isFinite(timestamp)  
+    ? timestamp  
+    : 0;  
+}  
+  
+  
+function setClaimLock(id,timestamp){  
+  
+  localStorage.setItem(  
+    CLAIM_KEY_PREFIX + id,  
+    String(timestamp)  
+  );  
+}  
+  
+  
+function formatDate(timestamp){  
+  
+  if(!timestamp)  
+    return "—";  
+  
+  const date =  
+    new Date(timestamp);  
+  
+  return date.toLocaleString(  
+    "en-US",  
+    {  
+      month:"short",  
+      day:"numeric",  
+      year:"numeric",  
+      hour:"2-digit",  
+      minute:"2-digit"  
+    }  
+  );  
+}  
+  
+  
+function formatTimeRemaining(ms){  
+  
+  if(ms <= 0)  
+    return "AVAILABLE NOW";  
+  
+  let seconds =  
+    Math.floor(ms / 1000);  
+  
+  const hours =  
+    Math.floor(seconds / 3600);  
+  
+  seconds %= 3600;  
+  
+  const minutes =  
+    Math.floor(seconds / 60);  
+  
+  seconds %= 60;  
+  
+  if(hours > 0)  
+    return `${hours}h ${minutes}m left`;  
+  
+  if(minutes > 0)  
+    return `${minutes}m ${seconds}s left`;  
+  
+  return `${seconds}s left`;  
+}  
+  
+  
+/* ============================================================  
+   STATS  
+   ============================================================ */  
+  
+function updateStats(category){  
+  
+  const prefix =  
+    category === "container"  
+      ? "c-"  
+      : "i-";  
+  
+  const catData =  
+    data[category] || {  
+      dailyLimit:0,  
+      tiers:{}  
+    };  
+  
+  const claimsToday =  
+    getClaimsToday(category);  
+  
+  const limit =  
+    Number(catData.dailyLimit) || 0;  
+  
+  document  
+    .getElementById(  
+      prefix + "claimsToday"  
+    )  
+    .textContent =  
+      claimsToday;  
+  
+  document  
+    .getElementById(  
+      prefix + "limit"  
+    )  
+    .textContent =  
+      limit === 0  
+        ? `${claimsToday}/∞`  
+        : `${claimsToday}/${limit}`;  
+  
+  let lockedCount = 0;  
+  let totalKeys = 0;  
+  
+  Object.entries(  
+    catData.tiers || {}  
+  ).forEach(([id,tier]) => {  
+  
+    if(  
+      Date.now() <  
+      getClaimLockTime(id)  
+    ){  
+  
+      lockedCount++;  
+    }  
+  
+    totalKeys +=  
+      Array.isArray(tier.keys)  
+        ? tier.keys.length  
+        : 0;  
+  });  
+  
+  document  
+    .getElementById(  
+      prefix + "locked"  
+    )  
+    .textContent =  
+      lockedCount;  
+  
+  document  
+    .getElementById(  
+      prefix + "keysLeft"  
+    )  
+    .textContent =  
+      totalKeys;  
+}  
+  
+  
+/* ============================================================  
+   PUBLIC CARDS  
+   ============================================================ */  
+  
+function renderPublic(category){  
+  
+  const catData =  
+    data[category] || {  
+      dailyLimit:0,  
+      tiers:{}  
+    };  
+  
+  const prefix =  
+    category === "container"  
+      ? "c-"  
+      : "i-";  
+  
+  const grid =  
+    document.getElementById(  
+      prefix + "grid"  
+    );  
+  
+  const dailyLimit =  
+    Number(catData.dailyLimit) || 0;  
+  
+  const claimsToday =  
+    getClaimsToday(category);  
+  
+  const limitReached =  
+    dailyLimit > 0 &&  
+    claimsToday >= dailyLimit;  
+  
+  
+  if(!data.systemEnabled){  
+  
+    grid.innerHTML = `  
+      <div class="offline-card">  
+        <h3>🚫 System Offline</h3>  
+        <p>  
+          Key claiming is temporarily disabled.  
+        </p>  
+      </div>  
+    `;  
+  
+    return;  
+  }  
+  
+  
+  if(limitReached){  
+  
+    grid.innerHTML = `  
+      <div class="offline-card">  
+        <h3>⚠️ Daily Limit Reached</h3>  
+        <p>  
+          Maximum ${dailyLimit} keys per day.  
+          Try again tomorrow.  
+        </p>  
+      </div>  
+    `;  
+  
+    return;  
+  }  
+  
+  
+  const tiers =  
+    Object.entries(  
+      catData.tiers || {}  
+    );  
+  
+  if(tiers.length === 0){  
+  
+    grid.innerHTML = `  
+      <div class="offline-card">  
+        <h3>📭 No Tiers</h3>  
+        <p>  
+          No key tiers are configured.  
+        </p>  
+      </div>  
+    `;  
+  
+    return;  
+  }  
+  
+  
+  grid.innerHTML = "";  
+  
+  
+  tiers.forEach(([id,tier]) => {  
+  
+    const keys =  
+      Array.isArray(tier.keys)  
+        ? tier.keys  
+        : [];  
+  
+    const remaining =  
+      keys.length;  
+  
+    const wait =  
+      Math.max(  
+        1,  
+        Number(tier.waitSeconds) || 15  
+      );  
+  
+    const lockHours =  
+      Math.max(  
+        1,  
+        Number(tier.lockHours) || 24  
+      );  
+  
+    const lockUntil =  
+      getClaimLockTime(id);  
+  
+    const isLocked =  
+      Date.now() < lockUntil;  
+  
+    const injector =  
+      category === "injector";  
+  
+  
+    const card =  
+      document.createElement("div");  
+  
+    card.className =  
+      "card" +  
+      (isLocked ? " locked" : "") +  
+      (injector ? " injector" : "");  
+  
+    card.id =  
+      `card-${id}`;  
+  
+  
+    card.innerHTML = `  
+  
+      <div class="card-tier">  
+        ${escapeHtml(tier.name)}  
+      </div>  
+  
+      <div class="card-days">  
+        ${Number(tier.days) || 1}  
+        <span>d</span>  
+      </div>  
+  
+      <div class="card-meta">  
+  
+        <span>  
+          Wait:  
+          <strong id="wt-${id}">  
+            0/${wait}s  
+          </strong>  
+        </span>  
+  
+        <span>  
+          Keys Left:  
+          <strong id="rm-${id}">  
+            ${remaining}  
+          </strong>  
+        </span>  
+  
+        <span>  
+          Lock:  
+          <strong>  
+            ${lockHours}h  
+          </strong>  
+          after claim  
+        </span>  
+  
+      </div>  
+  
+      ${  
+        isLocked  
+        ? `  
+          <div  
+            class="lock-display"  
+            id="lock-${id}">  
+            🔒 Available:<br>  
+            <strong>  
+              ${formatDate(lockUntil)}  
+            </strong>  
+          </div>  
+        `  
+        : ""  
+      }  
+  
+      <button  
+        id="bt-${id}"  
+        class="btn-primary ${injector ? "injector" : ""}"  
+        onclick="startCount('${id}','${category}')"  
+        ${isLocked || remaining === 0 ? "disabled" : ""}>  
+  
+        ${  
+          isLocked  
+            ? "🔒 LOCKED"  
+            : remaining === 0  
+              ? "❌ OUT OF KEYS"  
+              : "🔓 Unlock Key"  
+        }  
+  
+      </button>  
+  
+      <div  
+        id="ky-${id}"  
+        class="key-display ${injector ? "injector" : ""}">  
+        —  
+      </div>  
+  
+      <div  
+        id="note-${id}"  
+        class="copy-note hidden">  
+        ✅ Copied!  
+      </div>  
+    `;  
+  
+  
+    grid.appendChild(card);  
+  
+  
+    if(isLocked){  
+  
+      startLockCountdown(  
+        id,  
+        lockUntil,  
+        category  
+      );  
+    }  
+  });  
+}  
+  
+  
+/* ============================================================  
+   LOCK COUNTDOWN  
+   ============================================================ */  
+  
+function startLockCountdown(  
+  id,  
+  lockUntil,  
+  category  
+){  
+  
+  if(lockTimers[id]){  
+  
+    clearInterval(  
+      lockTimers[id]  
+    );  
+  }  
+  
+  
+  const update = () => {  
+  
+    const remaining =  
+      lockUntil - Date.now();  
+  
+    const lock =  
+      document.getElementById(  
+        `lock-${id}`  
+      );  
+  
+    if(lock){  
+  
+      lock.innerHTML = `  
+        🔒 Available:<br>  
+        <strong>  
+          ${formatDate(lockUntil)}  
+        </strong>  
+        <br>  
+        <span>  
+          ${formatTimeRemaining(remaining)}  
+        </span>  
+      `;  
+    }  
+  
+  
+    if(remaining <= 0){  
+  
+      clearInterval(  
+        lockTimers[id]  
+      );  
+  
+      delete lockTimers[id];  
+  
+      renderPublic(category);  
+  
+      updateStats("container");  
+      updateStats("injector");  
+    }  
+  };  
+  
+  
+  update();  
+  
+  lockTimers[id] =  
+    setInterval(  
+      update,  
+      1000  
+    );  
+}  
+  
+  
+/* ============================================================  
+   CLAIM COUNTDOWN  
+   ============================================================ */  
+  
+function startCount(id,category){  
+  
+  if(!data[category] ||  
+     !data[category].tiers[id]){  
+  
+    return;  
+  }  
+  
+  
+  const tier =  
+    data[category].tiers[id];  
+  
+  const btn =  
+    document.getElementById(  
+      `bt-${id}`  
+    );  
+  
+  const wt =  
+    document.getElementById(  
+      `wt-${id}`  
+    );  
+  
+  const ky =  
+    document.getElementById(  
+      `ky-${id}`  
+    );  
+  
+  
+  if(!btn || !wt || !ky)  
+    return;  
+  
+  
+  const keys =  
+    Array.isArray(tier.keys)  
+      ? tier.keys  
+      : [];  
+  
+  const wait =  
+    Math.max(  
+      1,  
+      Number(tier.waitSeconds) || 15  
+    );  
+  
+  const lockHours =  
+    Math.max(  
+      1,  
+      Number(tier.lockHours) || 24  
+    );  
+  
+  const dailyLimit =  
+    Number(  
+      data[category].dailyLimit  
+    ) || 0;  
+  
+  const claimsToday =  
+    getClaimsToday(category);  
+  
+  
+  if(!data.systemEnabled){  
+  
+    alert(  
+      "🚫 System is currently offline."  
+    );  
+  
+    return;  
+  }  
+  
+  
+  if(  
+    dailyLimit > 0 &&  
+    claimsToday >= dailyLimit  
+  ){  
+  
+    alert(  
+      "⚠️ Daily limit reached!"  
+    );  
+  
+    renderPublic(category);  
+  
+    return;  
+  }  
+  
+  
+  if(  
+    Date.now() <  
+    getClaimLockTime(id)  
+  ){  
+  
+    alert(  
+      "🔒 You are still locked out!"  
+    );  
+  
+    return;  
+  }  
+  
+  
+  if(keys.length === 0){  
+  
+    ky.textContent =  
+      "❌ No keys left";  
+  
+    ky.className =  
+      "key-display err";  
+  
+    btn.disabled = true;  
+  
+    return;  
+  }  
+  
+  
+  if(timers[id])  
+    return;  
+  
+  
+  btn.disabled = true;  
+  
+  ky.textContent =  
+    "⌚ Please wait...";  
+  
+  ky.className =  
+    "key-display warn";  
+  
+  
+  let sec = 0;  
+  
+  
+  wt.textContent =  
+    `0/${wait}s`;  
+  
+  
+  timers[id] =  
+    setInterval(() => {  
+  
+      sec++;  
+  
+      wt.textContent =  
+        `${sec}/${wait}s`;  
+  
+  
+      if(sec >= wait){  
+  
+        clearInterval(  
+          timers[id]  
+        );  
+  
+        delete timers[id];  
+  
+  
+        /*  
+         * Take the first key.  
+         */  
+  
+        const issued =  
+          keys[0];  
+  
+  
+        /*  
+         * Remove locally first.  
+         */  
+  
+        keys.shift();  
+  
+  
+        /*  
+         * Show key.  
+         */  
+  
+        ky.textContent =  
+          issued;  
+  
+        ky.className =  
+          "key-display ready" +  
+          (  
+            category === "injector"  
+              ? " injector"  
+              : ""  
+          );  
+  
+  
+        ky.onclick =  
+          () => copyText(  
+            issued,  
+            `note-${id}`  
+          );  
+  
+  
+        /*  
+         * Lock this tier.  
+         */  
+  
+        const lockUntil =  
+          Date.now() +  
+          lockHours *  
+          60 *  
+          60 *  
+          1000;  
+  
+        setClaimLock(  
+          id,  
+          lockUntil  
+        );  
+  
+  
+        /*  
+         * Statistics.  
+         */  
+  
+        incrementClaimCounter(  
+          category  
+        );  
+  
+  
+        /*  
+         * History.  
+         */  
+  
+        addToHistory(  
+          category,  
+          tier.name  
+        );  
+  
+  
+        /*  
+         * Save remaining keys.  
+         */  
+  
+        db.ref(  
+          `/${category}/tiers/${id}/keys`  
+        )  
+        .set(keys)  
+        .then(() => {  
+  
+          console.log(  
+            "Key removed successfully"  
+          );  
+  
+        })  
+        .catch(error => {  
+  
+          console.error(  
+            "Failed to update keys:",  
+            error  
+          );  
+  
+          alert(  
+            "⚠️ Key was displayed, but Firebase update failed:\n" +  
+            error.message  
+          );  
+        });  
+  
+  
+        /*  
+         * Copy automatically.  
+         */  
+  
+        copyText(  
+          issued,  
+          `note-${id}`  
+        );  
+  
+  
+        updateStats(  
+          category  
+        );  
+  
+  
+        /*  
+         * Refresh card so the remaining  
+         * key count is accurate.  
+         */  
+  
+        const remaining =  
+          document.getElementById(  
+            `rm-${id}`  
+          );  
+  
+        if(remaining){  
+  
+          remaining.textContent =  
+            keys.length;  
+        }  
+  
+  
+        /*  
+         * Start lock display.  
+         */  
+  
+        renderPublic(category);  
+  
+        updateStats(category);  
+  
+      }  
+  
+    },1000);  
+}  
+  
+  
+/* ============================================================  
+   COPY  
+   ============================================================ */  
+  
+async function copyText(  
+  text,  
+  noteId  
+){  
+  
+  const note =  
+    document.getElementById(  
+      noteId  
+    );  
+  
+  try{  
+  
+    if(  
+      navigator.clipboard &&  
+      window.isSecureContext  
+    ){  
+  
+      await navigator.clipboard  
+        .writeText(text);  
+  
+    }else{  
+  
+      throw new Error(  
+        "Clipboard API unavailable"  
+      );  
+    }  
+  
+  }catch(error){  
+  
+    const textarea =  
+      document.createElement(  
+        "textarea"  
+      );  
+  
+    textarea.value =  
+      text;  
+  
+    textarea.style.position =  
+      "fixed";  
+  
+    textarea.style.left =  
+      "-9999px";  
+  
+    document.body.appendChild(  
+      textarea  
+    );  
+  
+    textarea.focus();  
+    textarea.select();  
+  
+    try{  
+      document.execCommand("copy");  
+    }catch(e){  
+      console.error(e);  
+    }  
+  
+    document.body.removeChild(  
+      textarea  
+    );  
+  }  
+  
+  
+  if(note){  
+  
+    note.textContent =  
+      "✅ Copied!";  
+  
+    note.classList.remove(  
+      "hidden"  
+    );  
+  
+    setTimeout(() => {  
+  
+      note.classList.add(  
+        "hidden"  
+      );  
+  
+    },3000);  
+  }  
+}  
+  
+  
+/* ============================================================  
+   HISTORY  
+   ============================================================ */  
+  
+function addToHistory(  
+  category,  
+  tierName  
+){  
+  
+  const history =  
+    JSON.parse(  
+      localStorage.getItem(  
+        HISTORY_KEY  
+      ) || "[]"  
+    );  
+  
+  
+  history.unshift({  
+  
+    time:  
+      new Date().toLocaleString(),  
+  
+    category:  
+      String(category).toUpperCase(),  
+  
+    tier:  
+      tierName  
+  
+  });  
+  
+  
+  localStorage.setItem(  
+  
+    HISTORY_KEY,  
+  
+    JSON.stringify(  
+      history.slice(0,200)  
+    )  
+  );  
+  
+  
+  renderHistory();  
+}  
+  
+  
+function renderHistory(){  
+  
+  const log =  
+    document.getElementById(  
+      "historyLog"  
+    );  
+  
+  if(!log)  
+    return;  
+  
+  
+  const history =  
+    JSON.parse(  
+      localStorage.getItem(  
+        HISTORY_KEY  
+      ) || "[]"  
+    );  
+  
+  
+  if(history.length === 0){  
+  
+    log.innerHTML =  
+      '<div class="hint">No claims recorded yet</div>';  
+  
+    return;  
+  }  
+  
+  
+  log.innerHTML =  
+    history  
+      .map(entry => `  
+        <div class="log-entry">  
+          📋  
+          ${escapeHtml(entry.time)}  
+          —  
+          [${escapeHtml(entry.category)}]  
+          ${escapeHtml(entry.tier)}  
+        </div>  
+      `)  
+      .join("");  
+}  
+  
+  
+function exportHistory(){  
+  
+  const history =  
+    JSON.parse(  
+      localStorage.getItem(  
+        HISTORY_KEY  
+      ) || "[]"  
+    );  
+  
+  
+  if(history.length === 0){  
+  
+    alert(  
+      "Nothing to export!"  
+    );  
+  
+    return;  
+  }  
+  
+  
+  const text =  
+    history  
+      .map(entry =>  
+        `${entry.time} | ${entry.category} | ${entry.tier}`  
+      )  
+      .join("\n");  
+  
+  
+  const blob =  
+    new Blob(  
+      [text],  
+      {type:"text/plain"}  
+    );  
+  
+  
+  const url =  
+    URL.createObjectURL(  
+      blob  
+    );  
+  
+  
+  const a =  
+    document.createElement(  
+      "a"  
+    );  
+  
+  a.href = url;  
+  
+  a.download =  
+    `claim-history-${getTodayKey()}.txt`;  
+  
+  document.body.appendChild(a);  
+  
+  a.click();  
+  
+  a.remove();  
+  
+  URL.revokeObjectURL(url);  
+}  
+  
+  
+function clearHistory(){  
+  
+  if(  
+    !confirm(  
+      "Clear all history log?"  
+    )  
+  ){  
+  
+    return;  
+  }  
+  
+  
+  localStorage.removeItem(  
+    HISTORY_KEY  
+  );  
+  
+  renderHistory();  
+  
+  alert(  
+    "✅ History cleared!"  
+  );  
+}  
+  
+  
+/* ============================================================  
+   ADMIN AUTH  
+   ============================================================ */  
+  
+function openAdmin(){  
+  
+  const saved =  
+    localStorage.getItem(  
+      STORAGE_KEY  
+    );  
+  
+  
+  if(  
+    adminPass &&  
+    saved !== btoa(adminPass)  
+  ){  
+  
+    document  
+      .getElementById("passModal")  
+      .classList.remove("hidden");  
+  
+    setTimeout(() => {  
+  
+      document  
+        .getElementById("passCheck")  
+        .focus();  
+  
+    },100);  
+  
+  }else{  
+  
+    document  
+      .getElementById("adminModal")  
+      .classList.remove("hidden");  
+  
+    renderAdmin();  
+  }  
+}  
+  
+  
+function closeAdmin(){  
+  
+  document  
+    .getElementById("adminModal")  
+    .classList.add("hidden");  
+}  
+  
+  
+function closePassModal(){  
+  
+  document  
+    .getElementById("passModal")  
+    .classList.add("hidden");  
+  
+  document  
+    .getElementById("passCheck")  
+    .value = "";  
+  
+  document  
+    .getElementById("passErr")  
+    .style.display = "none";  
+}  
+  
+  
+function verifyPass(){  
+  
+  const input =  
+    document  
+      .getElementById("passCheck")  
+      .value;  
+  
+  
+  if(input === adminPass){  
+  
+    localStorage.setItem(  
+      STORAGE_KEY,  
+      btoa(adminPass)  
+    );  
+  
+  
+    closePassModal();  
+  
+  
+    document  
+      .getElementById("adminModal")  
+      .classList.remove("hidden");  
+  
+  
+    renderAdmin();  
+  
+  }else{  
+  
+    document  
+      .getElementById("passErr")  
+      .style.display = "block";  
+  }  
+}  
+  
+  
+function logout(){  
+  
+  localStorage.removeItem(  
+    STORAGE_KEY  
+  );  
+  
+  document  
+    .getElementById("logoutBtn")  
+    .classList.add("hidden");  
+  
+  closeAdmin();  
+  
+  alert(  
+    "✅ Logged out!"  
+  );  
+}  
+  
+  
+/* ============================================================  
+   ADMIN RENDER  
+   ============================================================ */  
+  
+function renderAdmin(){  
+  
+  if(adminPass){  
+  
+    document  
+      .getElementById("logoutBtn")  
+      .classList.remove("hidden");  
+  
+  }else{  
+  
+    document  
+      .getElementById("logoutBtn")  
+      .classList.add("hidden");  
+  }  
+  
+  
+  /*  
+   * System  
+   */  
+  
+  const online =  
+    data.systemEnabled;  
+  
+  
+  document  
+    .getElementById("sysLabel")  
+    .textContent =  
+      online  
+        ? "ONLINE"  
+        : "OFFLINE";  
+  
+  
+  document  
+    .getElementById("sysLabel")  
+    .style.color =  
+      online  
+        ? "var(--success)"  
+        : "var(--danger)";  
+  
+  
+  document  
+    .getElementById("sysToggle")  
+    .className =  
+      "toggle" +  
+      (online ? " on" : "");  
+  
+  
+  /*  
+   * Password  
+   */  
+  
+  const passHint =  
+    document.getElementById(  
+      "passHint"  
+    );  
+  
+  
+  passHint.textContent =  
+    adminPass  
+      ? "✅ Password saved — will ask on new browser"  
+      : "⚠️ No password set — set one to secure";  
+  
+  
+  passHint.className =  
+    adminPass  
+      ? "hint good"  
+      : "hint";  
+  
+  
+  /*  
+   * Daily limits  
+   */  
+  
+  document  
+    .getElementById("c-dailyLimit")  
+    .value =  
+      data.container.dailyLimit || "";  
+  
+  
+  document  
+    .getElementById("i-dailyLimit")  
+    .value =  
+      data.injector.dailyLimit || "";  
+  
+  
+  /*  
+   * Container tiers  
+   */  
+  
+  let cHtml = "";  
+  
+  
+  Object.entries(  
+    data.container.tiers  
+  ).forEach(([id,tier]) => {  
+  
+    cHtml += `  
+  
+      <div class="tier-block">  
+  
+        <h4>  
+          <span style="color:var(--text-primary)">  
+            ${escapeHtml(tier.name)}  
+          </span>  
+  
+          <span>  
+            Keys:  
+            ${(tier.keys || []).length}  
+          </span>  
+        </h4>  
+  
+        <div class="expiry-setting">  
+  
+          <div>  
+  
+            <label>  
+              Wait Sec  
+            </label>  
+  
+            <input  
+              type="number"  
+              id="${id}-wait"  
+              value="${Number(tier.waitSeconds) || 15}"  
+              min="1">  
+  
+          </div>  
+  
+          <div>  
+  
+            <label>  
+              Lock Hrs  
+            </label>  
+  
+            <input  
+              type="number"  
+              id="${id}-lock"  
+              value="${Number(tier.lockHours) || 24}"  
+              min="1">  
+  
+          </div>  
+  
+        </div>  
+  
+        <label>  
+          Keys (one per line)  
+        </label>  
+  
+        <textarea  
+          id="${id}-keys"  
+          placeholder="Paste keys here, one per line...">${escapeHtml((tier.keys || []).join("\n"))}</textarea>  </div>  
+`;
 
-      <button
-        id="bt-${id}"
-        class="btn-primary ${injector ? "injector" : ""}"
-        onclick="startCount('${id}','${category}')"
-        ${isLocked || remaining === 0 ? "disabled" : ""}>
+});
 
-        ${
-          isLocked
-            ? "🔒 LOCKED"
-            : remaining === 0
-              ? "❌ OUT OF KEYS"
-              : "🔓 Unlock Key"
-        }
+document
+.getElementById("c-tierList")
+.innerHTML =
+cHtml + `
 
-      </button>
+<div  
+      class="btn-row"  
+      style="margin-top:8px">  
 
-      <div
-        id="ky-${id}"
-        class="key-display ${injector ? "injector" : ""}">
-        —
-      </div>
+      <button  
+        class="btn-s prim"  
+        onclick="saveContainerSettings()">  
+        💾 Save Container Settings  
+      </button>  
 
-      <div
-        id="note-${id}"
-        class="copy-note hidden">
-        ✅ Copied!
-      </div>
-    `;
+    </div>  
+  `;
+
+/*
+
+Injector tiers
+*/
 
 
-    grid.appendChild(card);
+let iHtml = "";
 
+Object.entries(
+data.injector.tiers
+).forEach(([id,tier]) => {
 
-    if(isLocked){
+iHtml += `  
 
-      startLockCountdown(
-        id,
-        lockUntil,
-        category
-      );
-    }
-  });
+  <div class="tier-block inj">  
+
+    <h4>  
+      <span style="color:var(--text-primary)">  
+        ${escapeHtml(tier.name)}  
+      </span>  
+
+      <span>  
+        Keys:  
+        ${(tier.keys || []).length}  
+      </span>  
+    </h4>  
+
+    <div class="expiry-setting">  
+
+      <div>  
+
+        <label>  
+          Wait Sec  
+        </label>  
+
+        <input  
+          type="number"  
+          id="${id}-wait"  
+          value="${Number(tier.waitSeconds) || 20}"  
+          min="1">  
+
+      </div>  
+
+      <div>  
+
+        <label>  
+          Lock Hrs  
+        </label>  
+
+        <input  
+          type="number"  
+          id="${id}-lock"  
+          value="${Number(tier.lockHours) || 24}"  
+          min="1">  
+
+      </div>  
+
+    </div>  
+
+    <label>  
+      Keys (one per line)  
+    </label>  
+
+    <textarea  
+      id="${id}-keys"  
+      placeholder="Paste keys here, one per line...">${escapeHtml((tier.keys || []).join("\n"))}</textarea>  
+
+  </div>  
+`;
+
+});
+
+document
+.getElementById("i-tierList")
+.innerHTML =
+iHtml + `
+
+<div  
+      class="btn-row"  
+      style="margin-top:8px">  
+
+      <button  
+        class="btn-s pink"  
+        onclick="saveInjectorSettings()">  
+        💾 Save Injector Settings  
+      </button>  
+
+    </div>  
+  `;
+
+/*
+ * Points costs (Play & Earn)
+ */
+let pHtml = '<div class="expiry-setting" style="grid-template-columns:1fr 1fr;gap:10px">';
+Object.keys(data.pointsCosts).forEach(id => {
+  const tierName = (data.container.tiers[id] && data.container.tiers[id].name) ||
+                   (data.injector.tiers[id] && data.injector.tiers[id].name) || id;
+  pHtml += `
+    <div>
+      <label>${escapeHtml(tierName)} (points)</label>
+      <input type="number" id="pcost-${id}" value="${data.pointsCosts[id]}" min="1">
+    </div>
+  `;
+});
+pHtml += '</div>';
+document.getElementById("pointsCostList").innerHTML = pHtml;
+
 }
-
 
 /* ============================================================
-   LOCK COUNTDOWN
-   ============================================================ */
-
-function startLockCountdown(
-  id,
-  lockUntil,
-  category
-){
-
-  if(lockTimers[id]){
-
-    clearInterval(
-      lockTimers[id]
-    );
-  }
-
-
-  const update = () => {
-
-    const remaining =
-      lockUntil - Date.now();
-
-    const lock =
-      document.getElementById(
-        `lock-${id}`
-      );
-
-    if(lock){
-
-      lock.innerHTML = `
-        🔒 Available:<br>
-        <strong>
-          ${formatDate(lockUntil)}
-        </strong>
-        <br>
-        <span>
-          ${formatTimeRemaining(remaining)}
-        </span>
-      `;
-    }
-
-
-    if(remaining <= 0){
-
-      clearInterval(
-        lockTimers[id]
-      );
-
-      delete lockTimers[id];
-
-      renderPublic(category);
-
-      updateStats("container");
-      updateStats("injector");
-    }
-  };
-
-
-  update();
-
-  lockTimers[id] =
-    setInterval(
-      update,
-      1000
-    );
-}
-
-
-/* ============================================================
-   CLAIM COUNTDOWN
-   ============================================================ */
-
-function startCount(id,category){
-
-  if(!data[category] ||
-     !data[category].tiers[id]){
-
-    return;
-  }
-
-
-  const tier =
-    data[category].tiers[id];
-
-  const btn =
-    document.getElementById(
-      `bt-${id}`
-    );
-
-  const wt =
-    document.getElementById(
-      `wt-${id}`
-    );
-
-  const ky =
-    document.getElementById(
-      `ky-${id}`
-    );
-
-
-  if(!btn || !wt || !ky)
-    return;
-
-
-  const keys =
-    Array.isArray(tier.keys)
-      ? tier.keys
-      : [];
-
-  const wait =
-    Math.max(
-      1,
-      Number(tier.waitSeconds) || 15
-    );
-
-  const lockHours =
-    Math.max(
-      1,
-      Number(tier.lockHours) || 24
-    );
-
-  const dailyLimit =
-    Number(
-      data[category].dailyLimit
-    ) || 0;
-
-  const claimsToday =
-    getClaimsToday(category);
-
-
-  if(!data.systemEnabled){
-
-    alert(
-      "🚫 System is currently offline."
-    );
-
-    return;
-  }
-
-
-  if(
-    dailyLimit > 0 &&
-    claimsToday >= dailyLimit
-  ){
-
-    alert(
-      "⚠️ Daily limit reached!"
-    );
-
-    renderPublic(category);
-
-    return;
-  }
-
-
-  if(
-    Date.now() <
-    getClaimLockTime(id)
-  ){
-
-    alert(
-      "🔒 You are still locked out!"
-    );
-
-    return;
-  }
-
-
-  if(keys.length === 0){
-
-    ky.textContent =
-      "❌ No keys left";
-
-    ky.className =
-      "key-display err";
-
-    btn.disabled = true;
-
-    return;
-  }
-
-
-  if(timers[id])
-    return;
-
-
-  btn.disabled = true;
-
-  ky.textContent =
-    "⌚ Please wait...";
-
-  ky.className =
-    "key-display warn";
-
-
-  let sec = 0;
-
-
-  wt.textContent =
-    `0/${wait}s`;
-
-
-  timers[id] =
-    setInterval(() => {
-
-      sec++;
-
-      wt.textContent =
-        `${sec}/${wait}s`;
-
-
-      if(sec >= wait){
-
-        clearInterval(
-          timers[id]
-        );
-
-        delete timers[id];
-
-
-        /*
-         * Take the first key.
-         */
-
-        const issued =
-          keys[0];
-
-
-        /*
-         * Remove locally first.
-         */
-
-        keys.shift();
-
-
-        /*
-         * Show key.
-         */
-
-        ky.textContent =
-          issued;
-
-        ky.className =
-          "key-display ready" +
-          (
-            category === "injector"
-              ? " injector"
-              : ""
-          );
-
-
-        ky.onclick =
-          () => copyText(
-            issued,
-            `note-${id}`
-          );
-
-
-        /*
-         * Lock this tier.
-         */
-
-        const lockUntil =
-          Date.now() +
-          lockHours *
-          60 *
-          60 *
-          1000;
-
-        setClaimLock(
-          id,
-          lockUntil
-        );
-
-
-        /*
-         * Statistics.
-         */
-
-        incrementClaimCounter(
-          category
-        );
-
-
-        /*
-         * History.
-         */
-
-        addToHistory(
-          category,
-          tier.name
-        );
-
-
-        /*
-         * Save remaining keys.
-         */
-
-        db.ref(
-          `/${category}/tiers/${id}/keys`
-        )
-        .set(keys)
-        .then(() => {
-
-          console.log(
-            "Key removed successfully"
-          );
-
-        })
-        .catch(error => {
-
-          console.error(
-            "Failed to update keys:",
-            error
-          );
-
-          alert(
-            "⚠️ Key was displayed, but Firebase update failed:\n" +
-            error.message
-          );
-        });
-
-
-        /*
-         * Copy automatically.
-         */
-
-        copyText(
-          issued,
-          `note-${id}`
-        );
-
-
-        updateStats(
-          category
-        );
-
-
-        /*
-         * Refresh card so the remaining
-         * key count is accurate.
-         */
-
-        const remaining =
-          document.getElementById(
-            `rm-${id}`
-          );
-
-        if(remaining){
-
-          remaining.textContent =
-            keys.length;
-        }
-
-
-        /*
-         * Start lock display.
-         */
-
-        renderPublic(category);
-
-        updateStats(category);
-
-      }
-
-    },1000);
-}
-
-
-/* ============================================================
-   COPY
-   ============================================================ */
-
-async function copyText(
-  text,
-  noteId
-){
-
-  const note =
-    document.getElementById(
-      noteId
-    );
-
-  try{
-
-    if(
-      navigator.clipboard &&
-      window.isSecureContext
-    ){
-
-      await navigator.clipboard
-        .writeText(text);
-
-    }else{
-
-      throw new Error(
-        "Clipboard API unavailable"
-      );
-    }
-
-  }catch(error){
-
-    const textarea =
-      document.createElement(
-        "textarea"
-      );
-
-    textarea.value =
-      text;
-
-    textarea.style.position =
-      "fixed";
-
-    textarea.style.left =
-      "-9999px";
-
-    document.body.appendChild(
-      textarea
-    );
-
-    textarea.focus();
-    textarea.select();
-
-    try{
-      document.execCommand("copy");
-    }catch(e){
-      console.error(e);
-    }
-
-    document.body.removeChild(
-      textarea
-    );
-  }
-
-
-  if(note){
-
-    note.textContent =
-      "✅ Copied!";
-
-    note.classList.remove(
-      "hidden"
-    );
-
-    setTimeout(() => {
-
-      note.classList.add(
-        "hidden"
-      );
-
-    },3000);
-  }
-}
-
-
-/* ============================================================
-   HISTORY
-   ============================================================ */
-
-function addToHistory(
-  category,
-  tierName
-){
-
-  const history =
-    JSON.parse(
-      localStorage.getItem(
-        HISTORY_KEY
-      ) || "[]"
-    );
-
-
-  history.unshift({
-
-    time:
-      new Date().toLocaleString(),
-
-    category:
-      String(category).toUpperCase(),
-
-    tier:
-      tierName
-
-  });
-
-
-  localStorage.setItem(
-
-    HISTORY_KEY,
-
-    JSON.stringify(
-      history.slice(0,200)
-    )
-  );
-
-
-  renderHistory();
-}
-
-
-function renderHistory(){
-
-  const log =
-    document.getElementById(
-      "historyLog"
-    );
-
-  if(!log)
-    return;
-
-
-  const history =
-    JSON.parse(
-      localStorage.getItem(
-        HISTORY_KEY
-      ) || "[]"
-    );
-
-
-  if(history.length === 0){
-
-    log.innerHTML =
-      '<div class="hint">No claims recorded yet</div>';
-
-    return;
-  }
-
-
-  log.innerHTML =
-    history
-      .map(entry => `
-        <div class="log-entry">
-          📋
-          ${escapeHtml(entry.time)}
-          —
-          [${escapeHtml(entry.category)}]
-          ${escapeHtml(entry.tier)}
-        </div>
-      `)
-      .join("");
-}
-
-
-function exportHistory(){
-
-  const history =
-    JSON.parse(
-      localStorage.getItem(
-        HISTORY_KEY
-      ) || "[]"
-    );
-
-
-  if(history.length === 0){
-
-    alert(
-      "Nothing to export!"
-    );
-
-    return;
-  }
-
-
-  const text =
-    history
-      .map(entry =>
-        `${entry.time} | ${entry.category} | ${entry.tier}`
-      )
-      .join("\n");
-
-
-  const blob =
-    new Blob(
-      [text],
-      {type:"text/plain"}
-    );
-
-
-  const url =
-    URL.createObjectURL(
-      blob
-    );
-
-
-  const a =
-    document.createElement(
-      "a"
-    );
-
-  a.href = url;
-
-  a.download =
-    `claim-history-${getTodayKey()}.txt`;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-
-function clearHistory(){
-
-  if(
-    !confirm(
-      "Clear all history log?"
-    )
-  ){
-
-    return;
-  }
-
-
-  localStorage.removeItem(
-    HISTORY_KEY
-  );
-
-  renderHistory();
-
-  alert(
-    "✅ History cleared!"
-  );
-}
-
-
-/* ============================================================
-   ADMIN AUTH
-   ============================================================ */
-
-function openAdmin(){
-
-  const saved =
-    localStorage.getItem(
-      STORAGE_KEY
-    );
-
-
-  if(
-    adminPass &&
-    saved !== btoa(adminPass)
-  ){
-
-    document
-      .getElementById("passModal")
-      .classList.remove("hidden");
-
-    setTimeout(() => {
-
-      document
-        .getElementById("passCheck")
-        .focus();
-
-    },100);
-
-  }else{
-
-    document
-      .getElementById("adminModal")
-      .classList.remove("hidden");
-
-    renderAdmin();
-  }
-}
-
-
-function closeAdmin(){
-
-  document
-    .getElementById("adminModal")
-    .classList.add("hidden");
-}
-
-
-function closePassModal(){
-
-  document
-    .getElementById("passModal")
-    .classList.add("hidden");
-
-  document
-    .getElementById("passCheck")
-    .value = "";
-
-  document
-    .getElementById("passErr")
-    .style.display = "none";
-}
-
-
-function verifyPass(){
-
-  const input =
-    document
-      .getElementById("passCheck")
-      .value;
-
-
-  if(input === adminPass){
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      btoa(adminPass)
-    );
-
-
-    closePassModal();
-
-
-    document
-      .getElementById("adminModal")
-      .classList.remove("hidden");
-
-
-    renderAdmin();
-
-  }else{
-
-    document
-      .getElementById("passErr")
-      .style.display = "block";
-  }
-}
-
-
-function logout(){
-
-  localStorage.removeItem(
-    STORAGE_KEY
-  );
-
-  document
-    .getElementById("logoutBtn")
-    .classList.add("hidden");
-
-  closeAdmin();
-
-  alert(
-    "✅ Logged out!"
-  );
-}
-
-
-/* ============================================================
-   ADMIN RENDER
-   ============================================================ */
-
-function renderAdmin(){
-
-  if(adminPass){
-
-    document
-      .getElementById("logoutBtn")
-      .classList.remove("hidden");
-
-  }else{
-
-    document
-      .getElementById("logoutBtn")
-      .classList.add("hidden");
-  }
-
-
-  /*
-   * System
-   */
-
-  const online =
-    data.systemEnabled;
-
-
-  document
-    .getElementById("sysLabel")
-    .textContent =
-      online
-        ? "ONLINE"
-        : "OFFLINE";
-
-
-  document
-    .getElementById("sysLabel")
-    .style.color =
-      online
-        ? "var(--success)"
-        : "var(--danger)";
-
-
-  document
-    .getElementById("sysToggle")
-    .className =
-      "toggle" +
-      (online ? " on" : "");
-
-
-  /*
-   * Password
-   */
-
-  const passHint =
-    document.getElementById(
-      "passHint"
-    );
-
-
-  passHint.textContent =
-    adminPass
-      ? "✅ Password saved — will ask on new browser"
-      : "⚠️ No password set — set one to secure";
-
-
-  passHint.className =
-    adminPass
-      ? "hint good"
-      : "hint";
-
-
-  /*
-   * Daily limits
-   */
-
-  document
-    .getElementById("c-dailyLimit")
-    .value =
-      data.container.dailyLimit || "";
-
-
-  document
-    .getElementById("i-dailyLimit")
-    .value =
-      data.injector.dailyLimit || "";
-
-
-  /*
-   * Container tiers
-   */
-
-  let cHtml = "";
-
-
-  Object.entries(
-    data.container.tiers
-  ).forEach(([id,tier]) => {
-
-    cHtml += `
-
-      <div class="tier-block">
-
-        <h4>
-          <span style="color:var(--text-primary)">
-            ${escapeHtml(tier.name)}
-          </span>
-
-          <span>
-            Keys:
-            ${(tier.keys || []).length}
-          </span>
-        </h4>
-
-        <div class="expiry-setting">
-
-          <div>
-
-            <label>
-              Wait Sec
-            </label>
-
-            <input
-              type="number"
-              id="${id}-wait"
-              value="${Number(tier.waitSeconds) || 15}"
-              min="1">
-
-          </div>
-
-          <div>
-
-            <label>
-              Lock Hrs
-            </label>
-
-            <input
-              type="number"
-              id="${id}-lock"
-              value="${Number(tier.lockHours) || 24}"
-              min="1">
-
-          </div>
-
-        </div>
-
-        <label>
-          Keys (one per line)
-        </label>
-
-        <textarea
-          id="${id}-keys"
-          placeholder="Paste keys here, one per line...">${escapeHtml((tier.keys || []).join("\n"))}</textarea>
-
-      </div>
-    `;
-  });
-
-
-  document
-    .getElementById("c-tierList")
-    .innerHTML =
-      cHtml + `
-
-        <div
-          class="btn-row"
-          style="margin-top:8px">
-
-          <button
-            class="btn-s prim"
-            onclick="saveContainerSettings()">
-            💾 Save Container Settings
-          </button>
-
-        </div>
-      `;
-
-
-  /*
-   * Injector tiers
-   */
-
-  let iHtml = "";
-
-
-  Object.entries(
-    data.injector.tiers
-  ).forEach(([id,tier]) => {
-
-    iHtml += `
-
-      <div class="tier-block inj">
-
-        <h4>
-          <span style="color:var(--text-primary)">
-            ${escapeHtml(tier.name)}
-          </span>
-
-          <span>
-            Keys:
-            ${(tier.keys || []).length}
-          </span>
-        </h4>
-
-        <div class="expiry-setting">
-
-          <div>
-
-            <label>
-              Wait Sec
-            </label>
-
-            <input
-              type="number"
-              id="${id}-wait"
-              value="${Number(tier.waitSeconds) || 20}"
-              min="1">
-
-          </div>
-
-          <div>
-
-            <label>
-              Lock Hrs
-            </label>
-
-            <input
-              type="number"
-              id="${id}-lock"
-              value="${Number(tier.lockHours) || 24}"
-              min="1">
-
-          </div>
-
-        </div>
-
-        <label>
-          Keys (one per line)
-        </label>
-
-        <textarea
-          id="${id}-keys"
-          placeholder="Paste keys here, one per line...">${escapeHtml((tier.keys || []).join("\n"))}</textarea>
-
-      </div>
-    `;
-  });
-
-
-  document
-    .getElementById("i-tierList")
-    .innerHTML =
-      iHtml + `
-
-        <div
-          class="btn-row"
-          style="margin-top:8px">
-
-          <button
-            class="btn-s pink"
-            onclick="saveInjectorSettings()">
-            💾 Save Injector Settings
-          </button>
-
-        </div>
-      `;
-}
-
-
-/* ============================================================
-   SYSTEM TOGGLE
-   ============================================================ */
+SYSTEM TOGGLE
+============================================================ */
 
 function toggleSystem(){
 
-  const newValue =
-    !data.systemEnabled;
+const newValue =
+!data.systemEnabled;
 
+db.ref(
+"/systemEnabled"
+)
+.set(newValue)
+.then(() => {
 
-  db.ref(
-    "/systemEnabled"
-  )
-  .set(newValue)
-  .then(() => {
+data.systemEnabled =  
+  newValue;  
 
-    data.systemEnabled =
-      newValue;
+updateSystemBadge();
 
-    updateSystemBadge();
+})
+.catch(error => {
 
-  })
-  .catch(error => {
+alert(  
+  "❌ Failed to update system:\n" +  
+  error.message  
+);
 
-    alert(
-      "❌ Failed to update system:\n" +
-      error.message
-    );
-  });
+});
 }
 
-
 /* ============================================================
-   SAVE PASSWORD
-   ============================================================ */
+SAVE PASSWORD
+============================================================ */
 
 function savePass(){
 
-  const password =
-    document
-      .getElementById("passIn")
-      .value
-      .trim();
+const password =
+document
+.getElementById("passIn")
+.value
+.trim();
 
+if(password.length === 0){
 
-  if(password.length === 0){
+if(  
+  !confirm(  
+    "Remove admin password?"  
+  )  
+){  
 
-    if(
-      !confirm(
-        "Remove admin password?"
-      )
-    ){
-
-      return;
-    }
-  }
-
-
-  db.ref(
-    "/adminPassword"
-  )
-  .set(password)
-  .then(() => {
-
-    adminPass =
-      password;
-
-    if(password){
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        btoa(password)
-      );
-    }else{
-
-      localStorage.removeItem(
-        STORAGE_KEY
-      );
-    }
-
-
-    document
-      .getElementById("passIn")
-      .value = "";
-
-
-    renderAdmin();
-
-
-    alert(
-      "✅ Password saved!"
-    );
-
-  })
-  .catch(error => {
-
-    alert(
-      "❌ Failed:\n" +
-      error.message
-    );
-  });
+  return;  
 }
 
+}
+
+db.ref(
+"/adminPassword"
+)
+.set(password)
+.then(() => {
+
+adminPass =  
+  password;  
+
+if(password){  
+
+  localStorage.setItem(  
+    STORAGE_KEY,  
+    btoa(password)  
+  );  
+}else{  
+
+  localStorage.removeItem(  
+    STORAGE_KEY  
+  );  
+}  
+
+
+document  
+  .getElementById("passIn")  
+  .value = "";  
+
+
+renderAdmin();  
+
+
+alert(  
+  "✅ Password saved!"  
+);
+
+})
+.catch(error => {
+
+alert(  
+  "❌ Failed:\n" +  
+  error.message  
+);
+
+});
+}
 
 /* ============================================================
-   SAVE CONTAINER
-   ============================================================ */
+SAVE CONTAINER
+============================================================ */
 
 function saveContainerSettings(){
 
-  const daily =
-    Math.max(
-      0,
-      parseInt(
-        document
-          .getElementById(
-            "c-dailyLimit"
-          )
-          .value,
-        10
-      ) || 0
-    );
+const daily =
+Math.max(
+0,
+parseInt(
+document
+.getElementById(
+"c-dailyLimit"
+)
+.value,
+10
+) || 0
+);
+
+const updates = {
+dailyLimit:daily,
+tiers:{}
+};
+
+Object.keys(
+data.container.tiers
+).forEach(id => {
+
+const tier =  
+  data.container.tiers[id];  
 
 
-  const updates = {
-    dailyLimit:daily,
-    tiers:{}
-  };
+const wait =  
+  Math.max(  
+    1,  
+    parseInt(  
+      document  
+        .getElementById(  
+          `${id}-wait`  
+        )  
+        .value,  
+      10  
+    ) || 15  
+  );  
 
 
-  Object.keys(
-    data.container.tiers
-  ).forEach(id => {
-
-    const tier =
-      data.container.tiers[id];
-
-
-    const wait =
-      Math.max(
-        1,
-        parseInt(
-          document
-            .getElementById(
-              `${id}-wait`
-            )
-            .value,
-          10
-        ) || 15
-      );
+const lock =  
+  Math.max(  
+    1,  
+    parseInt(  
+      document  
+        .getElementById(  
+          `${id}-lock`  
+        )  
+        .value,  
+      10  
+    ) || 24  
+  );  
 
 
-    const lock =
-      Math.max(
-        1,
-        parseInt(
-          document
-            .getElementById(
-              `${id}-lock`
-            )
-            .value,
-          10
-        ) || 24
-      );
+const text =  
+  document  
+    .getElementById(  
+      `${id}-keys`  
+    )  
+    .value;  
 
 
-    const text =
-      document
-        .getElementById(
-          `${id}-keys`
-        )
-        .value;
+const keys =  
+  text  
+    .split(/\r?\n/)  
+    .map(key => key.trim())  
+    .filter(Boolean);  
 
 
-    const keys =
-      text
-        .split(/\r?\n/)
-        .map(key => key.trim())
-        .filter(Boolean);
+updates.tiers[id] = {  
 
+  ...tier,  
 
-    updates.tiers[id] = {
+  waitSeconds:wait,  
 
-      ...tier,
+  lockHours:lock,  
 
-      waitSeconds:wait,
+  keys:keys  
+};
 
-      lockHours:lock,
+});
 
-      keys:keys
-    };
-  });
+db.ref(
+"/container"
+)
+.update(updates)
+.then(() => {
 
+alert(  
+  "✅ Container settings saved!"  
+);
 
-  db.ref(
-    "/container"
-  )
-  .update(updates)
-  .then(() => {
+})
+.catch(error => {
 
-    alert(
-      "✅ Container settings saved!"
-    );
+alert(  
+  "❌ Failed to save container settings:\n" +  
+  error.message  
+);
 
-  })
-  .catch(error => {
-
-    alert(
-      "❌ Failed to save container settings:\n" +
-      error.message
-    );
-  });
+});
 }
 
-
 /* ============================================================
-   SAVE INJECTOR
-   ============================================================ */
+SAVE INJECTOR
+============================================================ */
 
 function saveInjectorSettings(){
 
-  const daily =
-    Math.max(
-      0,
-      parseInt(
-        document
-          .getElementById(
-            "i-dailyLimit"
-          )
-          .value,
-        10
-      ) || 0
-    );
+const daily =
+Math.max(
+0,
+parseInt(
+document
+.getElementById(
+"i-dailyLimit"
+)
+.value,
+10
+) || 0
+);
+
+const updates = {
+dailyLimit:daily,
+tiers:{}
+};
+
+Object.keys(
+data.injector.tiers
+).forEach(id => {
+
+const tier =  
+  data.injector.tiers[id];  
 
 
-  const updates = {
-    dailyLimit:daily,
-    tiers:{}
-  };
+const wait =  
+  Math.max(  
+    1,  
+    parseInt(  
+      document  
+        .getElementById(  
+          `${id}-wait`  
+        )  
+        .value,  
+      10  
+    ) || 20  
+  );  
 
 
-  Object.keys(
-    data.injector.tiers
-  ).forEach(id => {
-
-    const tier =
-      data.injector.tiers[id];
-
-
-    const wait =
-      Math.max(
-        1,
-        parseInt(
-          document
-            .getElementById(
-              `${id}-wait`
-            )
-            .value,
-          10
-        ) || 20
-      );
+const lock =  
+  Math.max(  
+    1,  
+    parseInt(  
+      document  
+        .getElementById(  
+          `${id}-lock`  
+        )  
+        .value,  
+      10  
+    ) || 24  
+  );  
 
 
-    const lock =
-      Math.max(
-        1,
-        parseInt(
-          document
-            .getElementById(
-              `${id}-lock`
-            )
-            .value,
-          10
-        ) || 24
-      );
+const text =  
+  document  
+    .getElementById(  
+      `${id}-keys`  
+    )  
+    .value;  
 
 
-    const text =
-      document
-        .getElementById(
-          `${id}-keys`
-        )
-        .value;
+const keys =  
+  text  
+    .split(/\r?\n/)  
+    .map(key => key.trim())  
+    .filter(Boolean);  
 
 
-    const keys =
-      text
-        .split(/\r?\n/)
-        .map(key => key.trim())
-        .filter(Boolean);
+updates.tiers[id] = {  
 
+  ...tier,  
 
-    updates.tiers[id] = {
+  waitSeconds:wait,  
 
-      ...tier,
+  lockHours:lock,  
 
-      waitSeconds:wait,
+  keys:keys  
+};
 
-      lockHours:lock,
+});
 
-      keys:keys
-    };
-  });
+db.ref(
+"/injector"
+)
+.update(updates)
+.then(() => {
 
+alert(  
+  "✅ Injector settings saved!"  
+);
 
-  db.ref(
-    "/injector"
-  )
-  .update(updates)
-  .then(() => {
+})
+.catch(error => {
 
-    alert(
-      "✅ Injector settings saved!"
-    );
+alert(  
+  "❌ Failed to save injector settings:\n" +  
+  error.message  
+);
 
-  })
-  .catch(error => {
-
-    alert(
-      "❌ Failed to save injector settings:\n" +
-      error.message
-    );
-  });
+});
 }
 
-
 /* ============================================================
-   KEYBOARD SHORTCUTS
+   PLAY & EARN — POINTS SYSTEM
    ============================================================ */
 
-document.addEventListener(
-  "keydown",
-  event => {
+function getPoints(){
+  return parseInt(localStorage.getItem(POINTS_KEY) || "0", 10);
+}
 
-    /*
-     * Enter inside password field
-     */
+function addPoints(n){
+  const p = getPoints() + Math.max(0, Math.floor(n));
+  localStorage.setItem(POINTS_KEY, String(p));
+  updatePointsBadge();
+  updateGameStats();
+  return p;
+}
 
-    if(
-      event.key === "Enter" &&
-      document
-        .getElementById("passModal")
-        .classList
-        .contains("hidden") === false
-    ){
+function spendPoints(n){
+  const p = getPoints();
+  if(p < n) return false;
+  localStorage.setItem(POINTS_KEY, String(p - n));
+  updatePointsBadge();
+  updateGameStats();
+  return true;
+}
 
-      verifyPass();
-    }
+function updatePointsBadge(){
+  const el = document.getElementById("pointsBadgeVal");
+  if(el) el.textContent = getPoints().toLocaleString();
+}
 
+function updateGameStats(){
+  const tp = document.getElementById("g-totalPoints");
+  if(tp) tp.textContent = getPoints().toLocaleString();
+  const best = document.getElementById("g-bestScore");
+  if(best) best.textContent = parseInt(localStorage.getItem(GAME_BEST_KEY) || "0", 10).toLocaleString();
+  const gc = document.getElementById("g-gamesPlayed");
+  if(gc) gc.textContent = localStorage.getItem(GAME_COUNT_KEY) || "0";
+}
 
-    /*
-     * Escape closes modals
-     */
+function resetAllPoints(){
+  if(!confirm("Reset ALL players' points? This only affects this browser.")) return;
+  localStorage.removeItem(POINTS_KEY);
+  localStorage.removeItem(GAME_BEST_KEY);
+  localStorage.removeItem(GAME_COUNT_KEY);
+  updatePointsBadge();
+  updateGameStats();
+  alert("✅ Points reset!");
+}
 
-    if(event.key === "Escape"){
+function savePointsCosts(){
+  const costs = {};
+  Object.keys(data.pointsCosts).forEach(id => {
+    const el = document.getElementById("pcost-" + id);
+    if(el) costs[id] = Math.max(1, parseInt(el.value, 10) || data.pointsCosts[id]);
+  });
+  db.ref("/pointsCosts").set(costs).then(() => {
+    alert("✅ Points costs saved!");
+  }).catch(e => alert("❌ Failed: " + e.message));
+}
 
-      closePassModal();
-      closeAdmin();
+/* ============================================================
+   REDEEM GRID (in game tab)
+   ============================================================ */
+
+function renderRedeemGrid(){
+  const grid = document.getElementById("redeemGrid");
+  if(!grid) return;
+  if(!data.systemEnabled){
+    grid.innerHTML = '<div class="offline-card"><h3>🚫 System Offline</h3><p>Redeeming is disabled.</p></div>';
+    return;
+  }
+  const cards = [];
+  ["container","injector"].forEach(cat => {
+    Object.entries(data[cat].tiers || {}).forEach(([id, tier]) => {
+      const cost = data.pointsCosts[id] || 500;
+      const keysLeft = (tier.keys || []).length;
+      const points = getPoints();
+      const canAfford = points >= cost && keysLeft > 0;
+      const isInj = cat === "injector";
+      cards.push(`
+        <div class="redeem-card" style="${isInj ? 'border-color:var(--inj-border)' : ''}">
+          <div class="r-tier" style="${isInj ? 'color:var(--inj-accent-light)' : ''}">${escapeHtml(tier.name)}</div>
+          <div class="r-days">${Number(tier.days)||1}<span>d</span></div>
+          <div class="r-cost">★ ${cost.toLocaleString()} PTS</div>
+          <div class="r-keys-left">Keys left: ${keysLeft}</div>
+          <button class="btn-primary ${isInj ? 'injector' : ''}" 
+            onclick="redeemWithPoints('${id}','${cat}')"
+            ${canAfford ? '' : 'disabled'}>
+            ${keysLeft === 0 ? '❌ OUT OF KEYS' : (points < cost ? `Need ${(cost-points).toLocaleString()} more` : '🎁 REDEEM NOW')}
+          </button>
+          <div class="redeem-key-display" id="rkey-${id}">—</div>
+        </div>
+      `);
+    });
+  });
+  grid.innerHTML = cards.join("");
+}
+
+function redeemWithPoints(id, category){
+  const cost = data.pointsCosts[id] || 500;
+  const tier = data[category] && data[category].tiers[id];
+  if(!tier){ alert("❌ Tier not found"); return; }
+  const keys = Array.isArray(tier.keys) ? tier.keys : [];
+  if(keys.length === 0){ alert("❌ No keys left for this tier"); return; }
+  if(getPoints() < cost){ alert("❌ Not enough points! Play more games."); return; }
+  if(!confirm(`Redeem ${cost.toLocaleString()} points for ${tier.name}?`)) return;
+
+  if(!spendPoints(cost)){ alert("❌ Points deduction failed"); return; }
+
+  const issued = keys[0];
+  keys.shift();
+
+  const display = document.getElementById("rkey-" + id);
+  if(display){
+    display.textContent = issued;
+    display.onclick = () => copyText(issued, null);
+  }
+  copyText(issued, null);
+
+  const lockHours = Math.max(1, Number(tier.lockHours) || 24);
+  setClaimLock(id, Date.now() + lockHours * 3600 * 1000);
+  incrementClaimCounter(category);
+  addToHistory(category, tier.name + " (REDEEMED)");
+
+  db.ref(`/${category}/tiers/${id}/keys`).set(keys).catch(e => {
+    console.error("Firebase update failed:", e);
+  });
+
+  updateStats(category);
+  renderRedeemGrid();
+  alert("✅ Key redeemed & copied to clipboard!");
+}
+
+/* ============================================================
+   KEY CATCH — GAME ENGINE
+   ============================================================ */
+
+(function(){
+  const state = {
+    running: false,
+    score: 0,
+    lives: 3,
+    combo: 0,
+    startTime: 0,
+    elapsed: 0,
+    spawnTimer: null,
+    fallTimer: null,
+    passiveTimer: null,
+    clockTimer: null,
+    items: [],
+    speed: 2.2,
+    spawnInterval: 900,
+    sessionEarned: 0
+  };
+
+  const area = document.getElementById("gameArea");
+  const overlay = document.getElementById("gameOverlay");
+  const overlayTitle = document.getElementById("overlayTitle");
+  const overlayText = document.getElementById("overlayText");
+  const startBtn = document.getElementById("gameStartBtn");
+
+  window.startGame = function(){
+    if(state.running) return;
+    state.running = true;
+    state.score = 0;
+    state.lives = 3;
+    state.combo = 0;
+    state.elapsed = 0;
+    state.speed = 2.2;
+    state.spawnInterval = 900;
+    state.items = [];
+    state.startTime = Date.now();
+    state.sessionEarned = 0;
+
+    overlay.style.display = "none";
+    clearArea();
+    updateHUD();
+
+    // spawner
+    state.spawnTimer = setInterval(spawnItem, state.spawnInterval);
+    // fall loop
+    state.fallTimer = setInterval(tickFall, 16);
+    // passive points +2/sec
+    state.passiveTimer = setInterval(() => {
+      if(state.running){
+        state.score += 2;
+        state.sessionEarned += 2;
+        updateHUD();
+      }
+    }, 1000);
+    // clock + difficulty ramp
+    state.clockTimer = setInterval(() => {
+      if(!state.running) return;
+      state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      // ramp difficulty every 10s
+      const level = Math.floor(state.elapsed / 10);
+      state.speed = 2.2 + level * 0.5;
+      const newInterval = Math.max(350, 900 - level * 70);
+      if(newInterval !== state.spawnInterval){
+        state.spawnInterval = newInterval;
+        clearInterval(state.spawnTimer);
+        state.spawnTimer = setInterval(spawnItem, state.spawnInterval);
+      }
+      updateHUD();
+    }, 1000);
+  };
+
+  function clearArea(){
+    state.items.forEach(it => { if(it.el && it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+    state.items = [];
+    area.querySelectorAll(".floating-score").forEach(el => el.remove());
+  }
+
+  function spawnItem(){
+    if(!state.running) return;
+    const isBomb = Math.random() < 0.22;
+    const el = document.createElement("div");
+    el.className = "falling-item " + (isBomb ? "bomb-item" : "key-item");
+    el.textContent = isBomb ? "💣" : "🔑";
+    const areaW = area.clientWidth;
+    const x = Math.random() * Math.max(10, areaW - 50);
+    el.style.left = x + "px";
+    area.appendChild(el);
+    const item = { el, x, y: -50, isBomb, speed: state.speed * (0.8 + Math.random() * 0.5), alive: true };
+    state.items.push(item);
+
+    el.addEventListener("pointerdown", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(!item.alive || !state.running) return;
+      item.alive = false;
+      if(item.el.parentNode) item.el.parentNode.removeChild(item.el);
+      if(item.isBomb){
+        state.lives--;
+        state.combo = 0;
+        area.classList.add("shake");
+        setTimeout(() => area.classList.remove("shake"), 300);
+        showFloat(item.x, 40, "-1 LIFE", "#ef4444");
+        if(state.lives <= 0){ endGame(); return; }
+      }else{
+        state.combo++;
+        const mult = Math.min(5, 1 + Math.floor(state.combo / 5));
+        const pts = 15 * mult;
+        state.score += pts;
+        state.sessionEarned += pts;
+        showFloat(item.x, 40, "+" + pts + (mult > 1 ? " x" + mult : ""), "#fbbf24");
+      }
+      updateHUD();
+    });
+  }
+
+  function tickFall(){
+    if(!state.running) return;
+    const h = area.clientHeight;
+    for(let i = state.items.length - 1; i >= 0; i--){
+      const it = state.items[i];
+      if(!it.alive){ state.items.splice(i,1); continue; }
+      it.y += it.speed;
+      it.el.style.transform = "translateY(" + it.y + "px)";
+      if(it.y > h + 10){
+        it.alive = false;
+        if(it.el.parentNode) it.el.parentNode.removeChild(it.el);
+        if(!it.isBomb){ state.combo = 0; updateHUD(); }
+        state.items.splice(i,1);
+      }
     }
   }
-);
 
+  function showFloat(x, y, text, color){
+    const f = document.createElement("div");
+    f.className = "floating-score";
+    f.textContent = text;
+    f.style.left = x + "px";
+    f.style.top = y + "px";
+    f.style.color = color;
+    area.appendChild(f);
+    setTimeout(() => { if(f.parentNode) f.parentNode.removeChild(f); }, 800);
+  }
+
+  function updateHUD(){
+    const s = document.getElementById("hudScore");
+    const l = document.getElementById("hudLives");
+    const c = document.getElementById("hudCombo");
+    const t = document.getElementById("hudTime");
+    if(s) s.textContent = state.score;
+    if(l) l.textContent = "♥".repeat(Math.max(0,state.lives)) + "♡".repeat(Math.max(0,3-state.lives));
+    if(c){
+      const mult = Math.min(5, 1 + Math.floor(state.combo / 5));
+      c.textContent = "x" + mult + (state.combo > 0 ? " (" + state.combo + ")" : "");
+    }
+    if(t) t.textContent = state.elapsed + "s";
+  }
+
+  function endGame(){
+    state.running = false;
+    clearInterval(state.spawnTimer);
+    clearInterval(state.fallTimer);
+    clearInterval(state.passiveTimer);
+    clearInterval(state.clockTimer);
+    clearArea();
+
+    // award points
+    const earned = state.score;
+    addPoints(earned);
+
+    // best score
+    const best = parseInt(localStorage.getItem(GAME_BEST_KEY) || "0", 10);
+    if(earned > best) localStorage.setItem(GAME_BEST_KEY, String(earned));
+    // games played
+    const gc = parseInt(localStorage.getItem(GAME_COUNT_KEY) || "0", 10) + 1;
+    localStorage.setItem(GAME_COUNT_KEY, String(gc));
+    // session earned display
+    const sesEl = document.getElementById("g-sessionPoints");
+    if(sesEl) sesEl.textContent = getPoints().toLocaleString();
+
+    overlayTitle.textContent = "GAME OVER";
+    overlayText.innerHTML = `You survived <strong style="color:#fbbf24">${state.elapsed}s</strong> and earned <strong style="color:#fbbf24">+${earned.toLocaleString()} points</strong>!<br>Best: ${Math.max(best, earned).toLocaleString()} · Games: ${gc}`;
+    startBtn.textContent = "▶ PLAY AGAIN";
+    overlay.style.display = "flex";
+    updateGameStats();
+    renderRedeemGrid();
+  }
+
+  // expose for reset
+  window._gameState = state;
+})();
 
 /* ============================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-   ============================================================ */
+KEYBOARD SHORTCUTS
+============================================================ */
 
 document.addEventListener(
-  "click",
-  event => {
+"keydown",
+event => {
 
-    const admin =
-      document.getElementById(
-        "adminModal"
-      );
+/*  
+ * Enter inside password field  
+ */  
 
-    const pass =
-      document.getElementById(
-        "passModal"
-      );
+if(  
+  event.key === "Enter" &&  
+  document  
+    .getElementById("passModal")  
+    .classList  
+    .contains("hidden") === false  
+){  
 
-
-    if(
-      event.target === admin
-    ){
-
-      closeAdmin();
-    }
+  verifyPass();  
+}  
 
 
-    if(
-      event.target === pass
-    ){
+/*  
+ * Escape closes modals  
+ */  
 
-      closePassModal();
-    }
-  }
+if(event.key === "Escape"){  
+
+  closePassModal();  
+  closeAdmin();  
+}
+
+}
 );
 
+/* ============================================================
+CLOSE MODAL WHEN CLICKING OUTSIDE
+============================================================ */
+
+document.addEventListener(
+"click",
+event => {
+
+const admin =  
+  document.getElementById(  
+    "adminModal"  
+  );  
+
+const pass =  
+  document.getElementById(  
+    "passModal"  
+  );  
+
+
+if(  
+  event.target === admin  
+){  
+
+  closeAdmin();  
+}  
+
+
+if(  
+  event.target === pass  
+){  
+
+  closePassModal();  
+}
+
+}
+);
 
 /* ============================================================
-   INITIALIZE
-   ============================================================ */
+INITIALIZE
+============================================================ */
 
 loadTheme();
 renderHistory();
 updateSystemBadge();
+updatePointsBadge();
+updateGameStats();
 
-</script>
-
-</body>
+</script>  </body>  
 </html>
